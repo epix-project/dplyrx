@@ -58,8 +58,8 @@ the variables that should be used to identify unique observations to aggregate
 in each of the stations Can Tho and Da Lat. Here we want aggregate by space but
 keep the temporal information contained in the variables `month` and `year`. The
 last argument, `fun` specifies the function that should be used to perform the
-aggregation. By default it's `sum` but here it makes more sense to do `mean`. To
-finish, let's talk about the last argument of the function, `new_name`, that we
+aggregation. By default it's `sum` but here it makes more sense to do `mean`.
+Let's now talk about the last argument of the function, `new_name`, that we
 haven't used in the previous calls. By default, the new value of the `station`
 variable for the aggregated observations is `Can Tho & Da Lat`, i.e. the names
 of the 2 aggregated stations separated by `&`. This default behavior can be
@@ -67,5 +67,15 @@ overwriten by explicitly specifying the `new_name` argument, for example:
 
 ```{r}
 aggregate_by(meteo, station %in% c("Can Tho", "Da Lat"), month, year, fun = mean, new_name = "mean of CT and DL")
+```
+
+We can naturally aggregate the observations of more than 2 provinces. For
+example, let's consider `temperature` and `humidity` only and average their
+values of the stations of Can Tho, Da Lat and Da Nang:
+
+```{r}
+meteo %>%
+  select(-rainfall, -sunshine) %>% 
+  aggregate_by(grepl("Can|Da", station), month, year, fun = mean)
 ```
 
