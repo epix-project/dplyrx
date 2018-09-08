@@ -13,6 +13,14 @@ complement those of the dplyr package.
 To learn more about dplyrx, start with the vignettes:
 `browseVignettes(package = "dplyrx")`
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/choisy/gamar}
+  \item Report bugs at \url{https://github.com/choisy/gamar/issues}
+}
+
+}
 \author{
 \strong{Maintainer}: Marc Choisy \email{marc.choisy@ird.fr} (0000-0002-5187-6390) [copyright holder]
 

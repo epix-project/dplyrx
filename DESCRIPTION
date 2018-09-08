@@ -13,6 +13,8 @@ Authors@R: c(person("Marc", "Choisy",
 Description: A collection of functions to work on data frames that complement
     those of the dplyr package.
 License: MIT + file LICENSE
+URL: https://github.com/choisy/gamar
+BugReports: https://github.com/choisy/gamar/issues
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1
