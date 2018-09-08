@@ -19,7 +19,7 @@ using the funtion \code{fun}.}
 
 \item{new_name}{the new value of the categorical variable, after aggregation.
 By default, it concatenates the values of the categorical variables used in
-\code{what}, separating them by "_&_".}
+\code{what}, separating them by " & ".}
 }
 \value{
 A data frame with the same variables as `df` but for which some of

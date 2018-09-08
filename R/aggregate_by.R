@@ -19,7 +19,7 @@
 #' @param fun the function used to perform the aggregation. By default \code{sum}.
 #' @param new_name the new value of the categorical variable, after aggregation.
 #' By default, it concatenates the values of the categorical variables used in
-#' \code{what}, separating them by "_&_".
+#' \code{what}, separating them by " & ".
 #'
 #' @return A data frame with the same variables as `df` but for which some of
 #' the observation have been aggregated (i.e. less rows than in `df`).
@@ -57,7 +57,7 @@ aggregate_by <- function(df, what, ..., fun = sum, new_name = NULL) {
     new_name <- select(df2, !!what_var) %>%
       unlist() %>%
       unique() %>%
-      paste(collapse = "_&_")
+      paste(collapse = " & ")
   }
   out <- anti_join(df, df2, names(df))
   df2 %>%
