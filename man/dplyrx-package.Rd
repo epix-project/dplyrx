@@ -16,8 +16,8 @@ To learn more about dplyrx, start with the vignettes:
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://github.com/choisy/gamar}
-  \item Report bugs at \url{https://github.com/choisy/gamar/issues}
+  \item \url{https://github.com/epix-project/dplyrx}
+  \item Report bugs at \url{https://github.com/epix-project/dplyrx/issues}
 }
 
 }
