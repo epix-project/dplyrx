@@ -19,7 +19,7 @@
 <![endif]-->
 </head>
 <body>
-    <div class="container template-home">
+    <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
@@ -63,12 +63,37 @@
 
       
       </header><div class="row">
-  <div class="contents col-md-9">
-    A collection of functions to work on data frames that complement
-    those of the dplyr package.
+  <div class="col-md-9 contents">
+    
+
+    
+    
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+<div id="dplyrx" class="section level1">
+<div class="page-header"><h1 class="hasAnchor">
+<a href="#dplyrx" class="anchor"></a>dplyrx</h1></div>
+<p><code>dplyrx</code> is a collection of functions that extend those in the <a href="https://dplyr.tidyverse.org"><code>dplyr</code></a> package.</p>
+<div id="installation" class="section level2">
+<h2 class="hasAnchor">
+<a href="#installation" class="anchor"></a>Installation</h2>
+<p>You can install dplyrx from github with:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># install.packages("devtools")</span>
+devtools<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/devtools/topics/install_github">install_github</a></span>(<span class="st">"epix-project/dplyrx"</span>)</code></pre></div>
+</div>
+<div id="example" class="section level2">
+<h2 class="hasAnchor">
+<a href="#example" class="anchor"></a>Example</h2>
+<p>Below is a basic example which shows you how to solve a common problem. Imagine that you have a data frame that looks like this:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">set.seed</span>(<span class="dv">30101976</span>)
+data &lt;-<span class="st"> </span><span class="kw">expand.grid</span>(letters[<span class="dv">1</span><span class="op">:</span><span class="dv">3</span>], <span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, <span class="dv">4</span><span class="op">:</span><span class="dv">6</span>)
+data &lt;-<span class="st"> </span><span class="kw">cbind</span>(data, <span class="kw">data.frame</span>(<span class="kw">replicate</span>(<span class="dv">3</span>, <span class="kw">sample</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">100</span>, <span class="kw">nrow</span>(data), <span class="ot">TRUE</span>))))</code></pre></div>
+<p>where <code>Var1</code> could be thought of a spatial location name, <code>Var2</code> and <code>Var3</code> can be thought of year and month and <code>X1</code>, <code>X2</code> and <code>X3</code> can be tought of measured values for given points in space and time. If you want to aggregate the values “a” and “b” of the categorical the variable <code>Var1</code>, summing the values of variables X4, X5 and X6, it can be done like this:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">dplyrx<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/dplyrx/topics/aggregate_by">aggregate_by</a></span>(data, Var1 <span class="op">%in%</span><span class="st"> </span><span class="kw">c</span>(<span class="st">"a"</span>, <span class="st">"b"</span>), Var2, Var3)</code></pre></div>
+</div>
+</div>
   </div>
 
-  <div class="col-md-3" id="sidebar">
+  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <div class="links">
 <h2>Links</h2>
 <ul class="list-unstyled">
@@ -95,7 +120,8 @@
 </ul>
 </div>
 
-  </div>
+      </div>
+
 </div>
 
 
