@@ -1,4 +1,4 @@
-#' Aggregating variables
+#' Aggregating observations on some variables
 #'
 #' \code{aggregate_by} aggregates some variables of a data frame according to
 #' the values of a categorical variable of the same data frame and using a given

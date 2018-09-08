@@ -2,7 +2,7 @@
 % Please edit documentation in R/aggregate_by.R
 \name{aggregate_by}
 \alias{aggregate_by}
-\title{Aggregating variables}
+\title{Aggregating observations on some variables}
 \usage{
 aggregate_by(df, what, ..., fun = sum, new_name = NULL)
 }
