@@ -4,3 +4,8 @@ development:
 authors:
   Marc Choisy:
     href: http://marcchoisy.free.fr
+
+reference:
+- title: Aggregating observations
+  contents:
+  - aggregate_by
