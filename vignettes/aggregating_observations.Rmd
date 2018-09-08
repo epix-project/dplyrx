@@ -5,8 +5,10 @@ date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Vignette Title}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include = FALSE}
@@ -77,5 +79,36 @@ values of the stations of Can Tho, Da Lat and Da Nang:
 meteo %>%
   select(-rainfall, -sunshine) %>% 
   aggregate_by(grepl("Can|Da", station), month, year, fun = mean)
+```
+
+## A more complex situation
+
+Let's now consider the case where, with the `meteo` data set, instead of
+performing a spatial aggregation we want to  perform a temporal aggregation.
+Let's imagine for example that we want to aggregate the months of January and
+May for all the provinces. What's apparent here is that the proper way of
+performing such an aggregation for the variables `temperature` and `humidity`
+would probably to use the `mean` function whereas it would certainly make more
+sense to use the `sum` function for the variables `rainfall` and `sunshine`. The
+pipeline below shows how to do so. First we need to define an utilitary function
+that add flexibility on the `aggregate_by` call to the `meteo` data frame.
+Specifically, it allows to define the variables of `meteo` we want to consider,
+and the function `f` we want to use as the `fun` argument of the `aggregate_by`
+function:
+
+```{r}
+fct <- function(x, f) {
+  aggregate_by(meteo[, !grepl(paste(x, collapse = "|"), names(meteo))],
+               month %in% c("January", "May"), year, station, fun = f)
+}
+```
+
+Then, using this utilitary function `fct` together with the `map2` and `invoke`
+functions of the `purrr` package we can get the targetted output:
+
+```{r}
+library(purrr)
+map2(list(c("rain", "sun"), c("temp", "hum")), c(mean, sum), fct) %>% 
+  invoke(left_join, ., by = c("year", "month", "station"))
 ```
 
