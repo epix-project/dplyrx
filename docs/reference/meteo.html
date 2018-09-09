@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Articles • dplyrx</title>
+<title>Meteoroligical data for 4 stations and 3 years in Vietnam. — meteo • dplyrx</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -28,7 +28,12 @@
 
 
 
-<meta property="og:title" content="Articles" />
+<meta property="og:title" content="Meteoroligical data for 4 stations and 3 years in Vietnam. — meteo" />
+
+<meta property="og:description" content="A dataset containing the temperature, the humidity, the cumulative rainfall
+and the number of hours of sunshine for 4 climatic stations of Vietnam for
+the months of January, May and September of the years 2013, 2014 and 2015." />
+<meta name="twitter:card" content="summary" />
 
 
 <!-- mathjax -->
@@ -43,7 +48,7 @@
   </head>
 
   <body>
-    <div class="container template-article-index">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -103,17 +108,49 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-      <h1>Articles</h1>
+    <h1>Meteoroligical data for 4 stations and 3 years in Vietnam.</h1>
+    <small class="dont-index">Source: <a href='https://github.com/epix-project/dplyrx/blob/master/R/data.R'><code>R/data.R</code></a></small>
+    <div class="hidden name"><code>meteo.Rd</code></div>
     </div>
 
-    <div class="section ">
-      <h3>All vignettes</h3>
-      <p class="section-desc"></p>
-
-      <ul>
-        <li><a href="aggregating_observations.html">Aggregating some observations in a data frame</a></li>
-      </ul>
+    <div class="ref-description">
+    
+    <p>A dataset containing the temperature, the humidity, the cumulative rainfall
+and the number of hours of sunshine for 4 climatic stations of Vietnam for
+the months of January, May and September of the years 2013, 2014 and 2015.</p>
+    
     </div>
+
+    <pre class="usage"><span class='no'>meteo</span></pre>
+        
+    <h2 class="hasAnchor" id="format"><a class="anchor" href="#format"></a>Format</h2>
+
+    <p>A data frame with 36 rows and 7 variables:</p><dl class='dl-horizontal'>
+  <dt>year</dt><dd><p>the year of collection.</p></dd>
+  <dt>month</dt><dd><p>the month of collection.</p></dd>
+  <dt>station</dt><dd><p>the name of the climatic station.</p></dd>
+  <dt>temperature</dt><dd><p>monthly average temperature in Celcuis degrees.</p></dd>
+  <dt>humidity</dt><dd><p>monthly average absolute humidity in g / m^3.</p></dd>
+  <dt>rainfall</dt><dd><p>monthly cumulative rainfall in mm.</p></dd>
+  <dt>sunshine</dt><dd><p>monthly cumulative number of hours of sunshine.</p></dd>
+</dl>
+    
+    <h2 class="hasAnchor" id="source"><a class="anchor" href="#source"></a>Source</h2>
+
+    <p>The Vietnamese Institute of Meteorology, Hydrology and Climate
+Change: <a href='http://www.imh.ac.vn'>http://www.imh.ac.vn</a>.</p>
+    
+
+  </div>
+  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
+    <h2>Contents</h2>
+    <ul class="nav nav-pills nav-stacked">
+      
+      <li><a href="#format">Format</a></li>
+
+      <li><a href="#source">Source</a></li>
+          </ul>
+
   </div>
 </div>
 
