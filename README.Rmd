@@ -12,7 +12,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# dplyrx
+# dplyrx <img src="man/figures/logo.png" align="right" width=120/>
 
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/dplyrx)](https://cran.r-project.org/package=dplyrx)
 
