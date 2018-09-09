@@ -18,7 +18,8 @@ BugReports: https://github.com/epix-project/dplyrx/issues
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1
-Depends: dplyr,
+Depends: R (>= 2.10),
+    dplyr,
     magrittr
 Suggests: knitr,
     rmarkdown
