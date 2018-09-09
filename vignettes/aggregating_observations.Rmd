@@ -1,7 +1,5 @@
 ---
 title: "Aggregating some observations in a data frame"
-author: "Marc Choisy"
-date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Vignette Title}
