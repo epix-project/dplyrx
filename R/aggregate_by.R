@@ -40,14 +40,14 @@
 #' ## Aggregating the values "a" and "b" of the categorical variable Var1,
 #' ## summing the values of variables Var4, Var5, Var6 (i.e. all the variables
 #' ## that are not in the arguments of the function call):
-#' aggregate_by(data, Var1, Var2, Var3, . %in% c("a", "b"))
+#' aggregate_by(data, Var1, Var2, Var3, expr = . %in% c("a", "b"))
 #'
 #' ## other way of writing it:
 #' sel <- c("Var2", "Var3")
 #' aggregate_by(data, Var1, Var2, Var3, expr = ". %in% c('a', 'b')")
-#' aggregate_by(data, "Var1", sel, expr = "grepl("a|b", .)")
+#' aggregate_by(data, "Var1", sel, expr = "grepl('a|b', .)")
 #' aggregate_by(data, Var1, "Var2", "Var3", expr = ". %in% c('a', 'b')")
-#' aggregate_by(data, "Var1", sel, expr = grepl("a|b", .))
+#' aggregate_by(data, "Var1", sel, expr = grepl('a|b', .))
 #'
 #' @importFrom magrittr %>% %<>%
 #' @importFrom dplyr filter anti_join mutate_if bind_rows select group_by summarise_all mutate

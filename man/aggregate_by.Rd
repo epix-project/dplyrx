@@ -4,16 +4,20 @@
 \alias{aggregate_by}
 \title{Aggregating observations on some variables}
 \usage{
-aggregate_by(df, what, ..., fun = sum, new_name = NULL)
+aggregate_by(df, col_name, ..., expr = NULL, fun = sum, new_name = NULL)
 }
 \arguments{
 \item{df}{the data frame on which to perform the aggregation.}
 
-\item{what}{an expression on the values of the categorical variable used for
-aggregation.}
+\item{col_name}{categorical variable used for aggregation.}
 
-\item{...}{the variables (unquoted names) on which to perform the aggregation,
-using the funtion \code{fun}.}
+\item{...}{the variables on which to perform the aggregation, using the
+funtion \code{fun}.}
+
+\item{expr}{an expression apply on col_name, to filter the values used for
+aggregation. In the expression, use a \code{.} to signify the position of
+\code{col_name} instead of naming it (see \code{examples}). If NULL, all the
+value are used for aggragation.}
 
 \item{fun}{the function used to perform the aggregation. By default \code{sum}.}
 
@@ -49,7 +53,14 @@ data$Var6 <- sample(1:100, nrow(data), TRUE)
 ## Aggregating the values "a" and "b" of the categorical variable Var1,
 ## summing the values of variables Var4, Var5, Var6 (i.e. all the variables
 ## that are not in the arguments of the function call):
-aggregate_by(data, Var1 \%in\% c("a", "b"), Var2, Var3)
+aggregate_by(data, Var1, Var2, Var3, expr = . \%in\% c("a", "b"))
+
+## other way of writing it:
+sel <- c("Var2", "Var3")
+aggregate_by(data, Var1, Var2, Var3, expr = ". \%in\% c('a', 'b')")
+aggregate_by(data, "Var1", sel, expr = "grepl('a|b', .)")
+aggregate_by(data, Var1, "Var2", "Var3", expr = ". \%in\% c('a', 'b')")
+aggregate_by(data, "Var1", sel, expr = grepl('a|b', .))
 
 }
 \author{

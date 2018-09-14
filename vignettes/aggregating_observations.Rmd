@@ -41,19 +41,20 @@ probably to take the mean. This can be done so with the `aggregate_by` function
 of the `dplyrx` package:
 
 ```{r}
-aggregate_by(meteo, station %in% c("Can Tho", "Da Lat"), month, year, fun = mean)
+aggregate_by(meteo, station, month, year, expr = . %in% c("Can Tho", "Da Lat"), fun = mean)
 ```
 
 The fact that we want to aggregate the observations of the stations Can Tho and
-Da Lat is specified by the second argument `station %in% c("Can Tho", "Da Lat")`.
+Da Lat is specified by the `expr` argument `. %in% c("Can Tho", "Da Lat")`.
+Where `station` is replace by a dot.
 Note that this can be specified in any way that can be recognized by the
 `dplyr::filter` function. For example,
 
 ```{r eval = FALSE}
-aggregate_by(meteo, grepl("Can|Lat", station), month, year, fun = mean)
+aggregate_by(meteo, station, month, year, expr = grepl("Can|Lat", .), fun = mean)
 ```
 
-would have worked just as well. Then, after, the second argument are listed all
+would have worked just as well. Then, after, the third argument are listed all
 the variables that should be used to identify unique observations to aggregate
 in each of the stations Can Tho and Da Lat. Here we want aggregate by space but
 keep the temporal information contained in the variables `month` and `year`. The
@@ -66,7 +67,7 @@ of the 2 aggregated stations separated by `&`. This default behavior can be
 overwriten by explicitly specifying the `new_name` argument, for example:
 
 ```{r}
-aggregate_by(meteo, station %in% c("Can Tho", "Da Lat"), month, year, fun = mean, new_name = "mean of CT and DL")
+aggregate_by(meteo, station, month, year, expr = . %in% c("Can Tho", "Da Lat"), fun = mean, new_name = "mean of CT and DL")
 ```
 
 We can naturally aggregate the observations of more than 2 provinces. For
@@ -76,7 +77,7 @@ values of the stations of Can Tho, Da Lat and Da Nang:
 ```{r}
 meteo %>%
   select(-rainfall, -sunshine) %>% 
-  aggregate_by(grepl("Can|Da", station), month, year, fun = mean)
+  aggregate_by(station, month, year, expr = grepl("Can|Da", .), fun = mean)
 ```
 
 ## A more complex situation
@@ -97,7 +98,7 @@ function:
 ```{r}
 fct <- function(x, f) {
   aggregate_by(meteo[, !grepl(paste(x, collapse = "|"), names(meteo))],
-               month %in% c("January", "May"), year, station, fun = f)
+               month, year, station, expr = .  %in% c("January", "May"), fun = f)
 }
 ```
 
