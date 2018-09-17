@@ -18,7 +18,7 @@
 #' @param expr an expression apply on col_name, to filter the values used for
 #' aggregation. In the expression, use a \code{.} to signify the position of
 #' \code{col_name} instead of naming it (see \code{examples}). If NULL, all the
-#' value are used for aggragation.
+#' value are used for aggregation.
 #' @param fun the function used to perform the aggregation. By default \code{sum}.
 #' @param new_name the new value of the categorical variable, after aggregation.
 #' By default, it concatenates the values of the categorical variables used in
@@ -47,14 +47,15 @@
 #' aggregate_by(data, Var1, Var2, Var3, expr = ". %in% c('a', 'b')")
 #' aggregate_by(data, "Var1", sel, expr = "grepl('a|b', .)")
 #' aggregate_by(data, Var1, "Var2", "Var3", expr = ". %in% c('a', 'b')")
-#' aggregate_by(data, "Var1", sel, expr = grepl('a|b', .))
+#' aggregate_by(data, "Var1", sel, expr = grepl("a|b", .))
 #'
 #' @importFrom magrittr %>% %<>%
 #' @importFrom dplyr filter anti_join mutate_if bind_rows select group_by summarise_all mutate
 #'
 #' @export
 #'
-aggregate_by <- function(df, col_name, ..., expr = NULL, fun = sum, new_name = NULL) {
+aggregate_by <- function(df, col_name, ..., expr = NULL, fun = sum,
+                         new_name = NULL) {
 
   res <- try(eval(col_name), silent = TRUE)
   if (inherits(res, "try-error")) {
@@ -68,7 +69,12 @@ aggregate_by <- function(df, col_name, ..., expr = NULL, fun = sum, new_name = N
     sel <-  as.character(substitute(list(...))) %>%
       grep("list", ., invert = T, value = T)
   } else {
-    sel <- eval(substitute(list(...))) %>% unlist %>% as.vector()
+    res <- try(eval(substitute(...)), silent = TRUE)
+    if(inherits(res, "try-error")) {
+      sel <- list(...) %>% unlist
+    } else {
+      sel <- eval(substitute(list(...))) %>% unlist %>% as.vector()
+     }
   }
 
   df %<>% mutate_if(is.factor, as.character)
@@ -97,10 +103,9 @@ aggregate_by <- function(df, col_name, ..., expr = NULL, fun = sum, new_name = N
   out <- anti_join(df, df2, names(df))
 
   df2 %>%
-    select(-!!what_var) %>%
+   select(-!!what_var) %>%
     group_by(.dots = sel) %>%
     summarise_all(fun) %>%
     mutate(!!what_var := new_name) %>%
     bind_rows(out, .)
 }
-

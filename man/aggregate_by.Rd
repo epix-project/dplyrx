@@ -17,7 +17,7 @@ funtion \code{fun}.}
 \item{expr}{an expression apply on col_name, to filter the values used for
 aggregation. In the expression, use a \code{.} to signify the position of
 \code{col_name} instead of naming it (see \code{examples}). If NULL, all the
-value are used for aggragation.}
+value are used for aggregation.}
 
 \item{fun}{the function used to perform the aggregation. By default \code{sum}.}
 
@@ -60,7 +60,7 @@ sel <- c("Var2", "Var3")
 aggregate_by(data, Var1, Var2, Var3, expr = ". \%in\% c('a', 'b')")
 aggregate_by(data, "Var1", sel, expr = "grepl('a|b', .)")
 aggregate_by(data, Var1, "Var2", "Var3", expr = ". \%in\% c('a', 'b')")
-aggregate_by(data, "Var1", sel, expr = grepl('a|b', .))
+aggregate_by(data, "Var1", sel, expr = grepl("a|b", .))
 
 }
 \author{
