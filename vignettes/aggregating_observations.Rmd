@@ -114,7 +114,77 @@ map2(list(c("rain", "sun"), c("temp", "hum")), c(mean, sum), fct) %>%
 ## Programming with aggregate_by
 
 The function `aggregate_by` has been written to make it possible to program 
-with. Let's consider a case where we want to perform a serie of spatial 
+with. 
+The following first examples here are reduced to very simple components to make
+them easier to understand.
+
+
+Writing a function with `aggregate_by` is possible as the arguments can be 
+specify with or without quotation.
+For these examples, we will just use the temperature columns of the 
+meteo data set, to have a simplier visualisation
+
+```{r}
+meteo2 <- meteo %>% select(year, month, station, temperature)
+```
+
+Let's start with a simple case: we want to aggregate all the station by month 
+and year. 
+
+```{r}
+aggregate_by(meteo2, station, month, year)
+```
+
+In a function: 
+
+```{r}
+my_aggregate_by <- function(df, group_var) {
+  aggregate_by(df, station, group_var)
+}
+
+my_aggregate_by(meteo2, c("year", "month"))
+```
+
+It's the same principle with the parameter `col_name` (here: `station`). We can 
+complexify a little bit our function:
+
+```{r}
+my_aggregate_by <- function(df, col_name, group_var) {
+  aggregate_by(df, col_name, group_var)
+}
+my_aggregate_by(meteo2, "station", c("year", "month"))
+
+
+sel <- "station"
+sel_var <- c("year", "month")
+my_aggregate_by(meteo2, sel, sel_var)
+```
+
+The next challenge is to also integrate the `expr` parameters in our function to
+be able to filter the values used for aggregation.
+
+```{r}
+my_aggregate_by <- function(df, col_name, group_var, expr) {
+  aggregate_by(df, col_name, group_var, expr = expr)
+}
+```
+
+We might hope that this will work:
+```{r, eval = FALSE}
+my_aggregate_by(meteo2, sel, sel_var, grepl('Can|Lat', .))
+# > Error in filter_impl(.data, quo) : Argument 2 filter condition does not evaluate to a logical vector
+```
+
+But it doesn't because the `expr` parameter should be provide as a string when
+used in programming to avoid problem of evaluation.
+```{r}
+my_aggregate_by(meteo2, sel, sel_var, "grepl('Can|Lat', .)")
+```
+ 
+ 
+### A more complex example
+
+Let's consider a case where we want to perform a serie of spatial 
 aggregation. For example, we can imagine that the station where previously 
 regroup in group. Let's imahine that the `group C` was form with `Da Nang` and 
 `Da Lat`) before in a `Group B` (`Group C`, `Can Tho`) et even before all the 
@@ -157,13 +227,13 @@ merge_province <- function(df, event_lst, col_group_by){
 We can now, apply our function with all the grouping event, 
 
 ```{r}
-merge_province(meteo, event_lst, c("month", "year"))
+merge_province(meteo2, event_lst, c("month", "year"))
 ```
 
 or just a selection of event: 
 
 ```{r}
-merge_province(meteo, event_lst[c("2014", "2013")], c("month", "year"))
+merge_province(meteo2, event_lst[c("2014", "2013")], c("month", "year"))
 ```
 
 We can also, use the `col_group_by` parameters to have the result by year 
@@ -171,5 +241,5 @@ instead of month and year. We just need to remove the column `month` of the
 data frame inputed.
 
 ```{r}
-merge_province(select(meteo, -month), event_lst, "year")
+merge_province(select(meteo2, -month), event_lst, "year")
 ```
