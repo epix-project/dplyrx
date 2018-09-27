@@ -1,7 +1,7 @@
 library(dplyr)    # for 'recode', 'select', 'summarise'
 library(magrittr) # for ' %>% '
 
-context("test `gaggregate_by` output")
+context("`aggregate_by`")
 
 test_that("`aggregate_by` returns the correct output with columns name
           imputed", {
@@ -47,8 +47,8 @@ test_that("`aggregate_by` returns the correct output with columns name
 })
 
 
-test_that("`aggregate_by` returns the correct output with columns name
-          imputed", {
+test_that("`aggregate_by` returns the correct output without columns name
+          imputedin `funs`", {
 
   # create a simple data frame
   set.seed(30101976)
@@ -91,5 +91,49 @@ test_that("`aggregate_by` returns the correct output with columns name
      mutate(Var1 = recode(Var1, a = "b")) %>%
      aggregate_by(Var1, Var2, Var3, .funs = list(sum, mean))
    expect_equal(test6, expect)
+
+})
+
+
+test_that("`aggregate_by` returns the correct output with quotation or not for
+columns name imputed", {
+
+  # create a simple data frame
+  set.seed(30101976)
+  data <- expand.grid(letters[1:3], 1:3, 4:6)
+  data$Var4 <- sample(1:100, nrow(data), TRUE)
+  data$Var5 <- sample(1:100, nrow(data), TRUE)
+  data$Var6 <- sample(1:100, nrow(data), TRUE)
+
+   # expected results
+   sum_all <- data %>%
+     mutate(Var1 = recode(Var1, a = "b")) %>% group_by(Var1, Var2, Var3) %>%
+     summarise_all(sum)
+
+   # Test without quotation
+   test7 <- data %>%
+     mutate(Var1 = recode(Var1, a = "b")) %>%
+     aggregate_by(Var1, Var2, Var3)
+   expect_equal(test7, sum_all)
+
+   # Test with quotation
+   test8 <- data %>%
+     mutate(Var1 = recode(Var1, a = "b")) %>%
+     aggregate_by("Var1", "Var2", "Var3")
+   expect_equal(test8, sum_all)
+
+   # Test with a vector
+   sel <- c("Var2", "Var3")
+   test8 <- data %>%
+     mutate(Var1 = recode(Var1, a = "b")) %>%
+     aggregate_by(Var1, sel)
+   expect_equal(test8, sum_all)
+
+   # Test with a vector
+   sel <- c("Var1", "Var2", "Var3")
+   test9 <- data %>%
+     mutate(Var1 = recode(Var1, a = "b")) %>%
+     aggregate_by(sel)
+   expect_equal(test9, sum_all)
 
 })
