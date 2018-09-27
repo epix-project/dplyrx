@@ -4,22 +4,16 @@
 #' the values of a categorical variable of the same data frame and using a given
 #' function for the aggregation.
 #'
-#' The function splits the data frame \code{df} in two data frames, based on the
-#' \code{what} argument. On the data frame that contains the values of the
-#' categorical variable to aggregate (df1), the function performs a
-#' \code{\link[dplyr]{group_by}} followed by a \code{\link[dplyr]{summarise_all}}
-#' with the function \code{fun} and then binds it by row with the other data
-#' frame (df2).
+#' On a data frame that contains the values of the categorical variable to
+#' aggregate (`col_name`, `...`), the function performs a
+#' \code{\link[dplyr]{group_by}} followed by a \code{\link[dplyr]{summarise}}
+#' with the function(s) \code{.funs}.
 #'
 #' @param df the data frame on which to perform the aggregation.
-#' @param what an expression on the values of the categorical variable used for
-#' aggregation.
-#' @param ... the variables (unquoted names) on which to perform the aggregation,
-#' using the funtion \code{fun}.
-#' @param fun the function used to perform the aggregation. By default \code{sum}.
-#' @param new_name the new value of the categorical variable, after aggregation.
-#' By default, it concatenates the values of the categorical variables used in
-#' \code{what}, separating them by " & ".
+#' @param col_name the variable on which to perform the aggregation
+#' @param ... other  variables on which to perform the aggregation
+#' @param .funs the function used to perform the aggregation.
+#' By default \code{sum}.
 #'
 #' @return A data frame with the same variables as `df` but for which some of
 #' the observation have been aggregated (i.e. less rows than in `df`).
@@ -27,6 +21,9 @@
 #' @author Marc Choisy and Lucie Contamin.
 #'
 #' @examples
+#'
+#' library(dplyr)
+#'
 #' ## A toy data frame:
 #' set.seed(30101976)
 #' data <- expand.grid(letters[1:3], 1:3, 4:6)
@@ -37,33 +34,81 @@
 #' ## Aggregating the values "a" and "b" of the categorical variable Var1,
 #' ## summing the values of variables Var4, Var5, Var6 (i.e. all the variables
 #' ## that are not in the arguments of the function call):
-#' aggregate_by(data, Var1 %in% c("a", "b"), Var2, Var3)
+#' data %>%
+#'  mutate(Var1 = recode(Var1, a = "b")) %>%
+#'  aggregate_by(data, Var1, Var2, Var3)
 #'
 #' @importFrom magrittr %>% %<>%
-#' @importFrom dplyr filter anti_join mutate_if bind_rows select group_by summarise_all mutate
+#' @importFrom dplyr filter anti_join mutate_if bind_rows select group_by
+#' summarise_all mutate enquo summarise left_join
+#' @importFrom purrr reduce
+#' @importFrom rlang parse_expr
 #'
 #' @export
-#'
-aggregate_by <- function(df, what, ..., fun = sum, new_name = NULL) {
-#  require(dplyr) # %>%, %<>%, filter, anti_join, mutate_if, bind_rows, select,
-  # group_by, summarise_all, mutate
-  arg_list <- as.list(match.call())
-  what_var <- arg_list$what %>%
-    paste() %>%
-    `[`(. %in% colnames(df))
-  df %<>% mutate_if(is.factor, as.character)
-  df2 <- eval(substitute(df %>% filter(what)))
-  if (is.null(new_name)) {
-    new_name <- select(df2, !!what_var) %>%
-      unlist() %>%
-      unique() %>%
-      paste(collapse = " & ")
+aggregate_by <- function(df, col_name, ..., .funs = sum) {
+
+  res <- try(eval(col_name), silent = TRUE)
+  if (inherits(res, "try-error")) {
+    col_name <- deparse(substitute(col_name))
   }
-  out <- anti_join(df, df2, names(df))
-  df2 %>%
-    select(-!!what_var) %>%
-    group_by(...) %>%
-    summarise_all(fun) %>%
-    mutate(!!what_var := new_name) %>%
-    bind_rows(out, .)
+
+  res <- try(eval(...), silent = TRUE)
+  if (inherits(res, "try-error")) {
+    col_sel <-  as.character(substitute(list(...))) %>%
+      grep("list", ., invert = T, value = T)
+  } else {
+    res1 <- try(eval(substitute(...)), silent = TRUE)
+    if(inherits(res1, "try-error")) {
+      col_sel <- list(...) %>% unlist
+    }
+  }
+
+  group_var <-  c(col_name, col_sel)
+
+  funs <- as.character(substitute(.funs)) %>%
+    grep("list", ., invert = T, value = T) %>%
+    unlist
+
+  if (funs %>% is.element(names(df)) %>% any()) {
+
+    x <- enquo(.funs)
+    df %<>% group_by(.dots = group_var) %>%
+      summarise(!!! x)
+
+  } else if (grepl(paste(names(df), collapse = "|"), funs) %>% any == FALSE) {
+
+    df %<>% group_by(.dots = group_var) %>%
+      summarise_all(funs)
+
+  } else{
+
+    df <- lapply(funs, function(x) {
+
+      if(grepl("\\,", x)){
+
+        x <- as.character(x)
+        sel <- strsplit(x, ", |,") %>%  unlist %>% strsplit("\\(") %>% unlist
+        msel <- sel[1]
+        x <- paste0(sel, ")", sep = "") %>% gsub("))", ")", .) %>%
+          paste(msel, ., sep = "(") %>% .[-1] %>% unlist
+
+        df <- lapply(x, function(z){
+
+          z <- rlang::parse_expr(z)
+          df %<>% group_by(.dots = group_var) %>%
+            summarise(!! z)
+        }) %>%
+          reduce(left_join, by = group_var)
+
+
+        } else {
+
+        x <- rlang::parse_expr(x)
+        df %<>% group_by(.dots = group_var) %>%
+          summarise(!! x)
+      }
+    }) %>%
+      reduce(left_join, by = group_var)
+  }
+  df
 }
