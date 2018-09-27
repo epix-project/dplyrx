@@ -12,7 +12,7 @@
 #' @param df the data frame on which to perform the aggregation.
 #' @param col_name the variable on which to perform the aggregation
 #' @param ... other  variables on which to perform the aggregation
-#' @param .sfun the function used to perform the aggregation.
+#' @param .funs the function used to perform the aggregation.
 #' By default \code{sum}.
 #'
 #' @return A data frame with the same variables as `df` but for which some of
@@ -35,7 +35,9 @@
 #'
 #' @importFrom magrittr %>% %<>%
 #' @importFrom dplyr filter anti_join mutate_if bind_rows select group_by
-#' summarise_all mutate
+#' summarise_all mutate enquo summarise left_join
+#' @importFrom purrr reduce
+#' @importFrom rlang parse_expr
 #'
 #' @export
 aggregate_by <- function(df, col_name, ..., .funs = sum) {
@@ -66,25 +68,20 @@ aggregate_by <- function(df, col_name, ..., .funs = sum) {
 
   print(funs)
 
-  if (funs %>% is.element(names(data)) %>% any()) {
-    print("funs contains one element which is element names(df)")
+  if (funs %>% is.element(names(df)) %>% any()) {
 
-    #group_var <-  c(col_name, col_sel)
     x <- enquo(.funs)
     df %<>% group_by(.dots = group_var) %>%
       summarise(!!! x)
 
   } else if (grepl(paste(names(df), collapse = "|"), funs) %>% any == FALSE) {
-    print("funs is not math of names(df)")
 
     df %<>% group_by(.dots = group_var) %>%
       summarise_all(funs)
 
   } else{
-    print("funs contains names(df) with other element")
 
     df <- lapply(funs, function(x) {
-      #group_var <-  c(col_name, col_sel)
 
       if(grepl("\\,", x)){
 
@@ -101,7 +98,7 @@ aggregate_by <- function(df, col_name, ..., .funs = sum) {
             summarise(!! z)
 
         }) %>%
-          purrr::reduce(left_join, by = group_var)
+          reduce(left_join, by = group_var)
 
       } else {
 
@@ -110,7 +107,7 @@ aggregate_by <- function(df, col_name, ..., .funs = sum) {
           summarise(!! x)
       }
     }) %>%
-      purrr::reduce(left_join, by = group_var)
+      reduce(left_join, by = group_var)
   }
   df
 }

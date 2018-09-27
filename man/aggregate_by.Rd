@@ -13,7 +13,7 @@ aggregate_by(df, col_name, ..., .funs = sum)
 
 \item{...}{other  variables on which to perform the aggregation}
 
-\item{.sfun}{the function used to perform the aggregation.
+\item{.funs}{the function used to perform the aggregation.
 By default \code{sum}.}
 }
 \value{
