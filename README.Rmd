@@ -47,5 +47,7 @@ values for given points in space and time. If you want to aggregate the values
 variables X4, X5 and X6, it can be done like this:
 
 ```{r eval = FALSE}
-dplyrx::aggregate_by(data, Var1 %in% c("a", "b"), Var2, Var3)
+data %>%
+  mutate(Var1 = recode(Var1, a = "b")) %>%
+  aggregate_by(data, Var1, Var2, Var3)
 ```

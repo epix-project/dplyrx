@@ -20,7 +20,11 @@ LazyData: true
 RoxygenNote: 6.0.1
 Depends: R (>= 2.10),
     dplyr,
-    magrittr
-Suggests: knitr,
-    rmarkdown
+    magrittr,
+    purrr,
+    rlang
+Suggests: covr, 
+    knitr,
+    rmarkdown,
+    testthat
 VignetteBuilder: knitr
