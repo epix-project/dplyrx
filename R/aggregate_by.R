@@ -55,8 +55,6 @@ aggregate_by <- function(df, col_name, ..., .funs = sum) {
     res1 <- try(eval(substitute(...)), silent = TRUE)
     if(inherits(res1, "try-error")) {
       col_sel <- list(...) %>% unlist
-    } else {
-      col_sel <- eval(substitute(list(...))) %>% unlist %>% as.vector()
     }
   }
 
@@ -65,8 +63,6 @@ aggregate_by <- function(df, col_name, ..., .funs = sum) {
   funs <- as.character(substitute(.funs)) %>%
     grep("list", ., invert = T, value = T) %>%
     unlist
-
-  print(funs)
 
   if (funs %>% is.element(names(df)) %>% any()) {
 
@@ -96,11 +92,11 @@ aggregate_by <- function(df, col_name, ..., .funs = sum) {
           z <- rlang::parse_expr(z)
           df %<>% group_by(.dots = group_var) %>%
             summarise(!! z)
-
         }) %>%
           reduce(left_join, by = group_var)
 
-      } else {
+
+        } else {
 
         x <- rlang::parse_expr(x)
         df %<>% group_by(.dots = group_var) %>%
