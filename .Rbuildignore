@@ -5,3 +5,4 @@
 ^\.travis\.yml$
 ^ignored/.*$
 ^codecov\.yml$
+^appveyor\.yml$
