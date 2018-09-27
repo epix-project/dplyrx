@@ -37,46 +37,35 @@ This data set contains the values of temperature (°C), absolute humidity
 (Can Tho, Da Lat and Da Nang) for the months of January, May and September in
 2013, 2014 and 2015. From here, imagine that you want to aggretate all the
 observations of the stations Can Tho and Da Lat. An obvious way to do so is
-probably to take the mean. This can be done so with the `aggregate_by` function
-of the `dplyrx` package:
+probably to take the mean. This can be done so in two step with the package 
+`dplyr` and with the `aggregate_by` function of the `dplyrx` package:
+First, we need to `recode` the stations selected with the same value and then
+used the `aggregate_by` function on the output. 
 
 ```{r}
-aggregate_by(meteo, station %in% c("Can Tho", "Da Lat"), month, year, fun = mean)
+library(dplyr)
+meteo %>% 
+  mutate(station = recode(station, `Can Tho` = "group_prov", `Da Lat`= "group_prov")) %>% 
+  aggregate_by(station, month, year, .funs = mean)
 ```
 
-The fact that we want to aggregate the observations of the stations Can Tho and
-Da Lat is specified by the second argument `station %in% c("Can Tho", "Da Lat")`.
-Note that this can be specified in any way that can be recognized by the
-`dplyr::filter` function. For example,
+The second argument are listed all the variables that should be used to 
+identify unique observations to aggregate in each of the stations Can Tho and 
+Da Lat. Here we want aggregate by space but keep the temporal information 
+contained in the variables `month` and `year`. 
 
-```{r eval = FALSE}
-aggregate_by(meteo, grepl("Can|Lat", station), month, year, fun = mean)
-```
+The last argument, `.funs` specifies the function that should be used to perform
+the aggregation. By default it's `sum` but here it makes more sense to do 
+`mean`.
 
-would have worked just as well. Then, after, the second argument are listed all
-the variables that should be used to identify unique observations to aggregate
-in each of the stations Can Tho and Da Lat. Here we want aggregate by space but
-keep the temporal information contained in the variables `month` and `year`. The
-last argument, `fun` specifies the function that should be used to perform the
-aggregation. By default it's `sum` but here it makes more sense to do `mean`.
-Let's now talk about the last argument of the function, `new_name`, that we
-haven't used in the previous calls. By default, the new value of the `station`
-variable for the aggregated observations is `Can Tho & Da Lat`, i.e. the names
-of the 2 aggregated stations separated by `&`. This default behavior can be
-overwriten by explicitly specifying the `new_name` argument, for example:
+We can naturally aggregate the observations and apply the function on 
+`temperature` and `humidity` only, the argument `.funs` need to be specify as a
+list:
 
 ```{r}
-aggregate_by(meteo, station %in% c("Can Tho", "Da Lat"), month, year, fun = mean, new_name = "mean of CT and DL")
-```
-
-We can naturally aggregate the observations of more than 2 provinces. For
-example, let's consider `temperature` and `humidity` only and average their
-values of the stations of Can Tho, Da Lat and Da Nang:
-
-```{r}
-meteo %>%
-  select(-rainfall, -sunshine) %>% 
-  aggregate_by(grepl("Can|Da", station), month, year, fun = mean)
+meteo %>% 
+  mutate(station = recode(station, `Can Tho` = "group_prov", `Da Lat`= "group_prov")) %>% 
+  aggregate_by(station, month, year, .funs = list(mean(temperature, humidity)))
 ```
 
 ## A more complex situation
@@ -88,25 +77,10 @@ May for all the provinces. What's apparent here is that the proper way of
 performing such an aggregation for the variables `temperature` and `humidity`
 would probably to use the `mean` function whereas it would certainly make more
 sense to use the `sum` function for the variables `rainfall` and `sunshine`. The
-pipeline below shows how to do so. First we need to define an utilitary function
-that add flexibility on the `aggregate_by` call to the `meteo` data frame.
-Specifically, it allows to define the variables of `meteo` we want to consider,
-and the function `f` we want to use as the `fun` argument of the `aggregate_by`
-function:
+pipeline below shows how to do so:
 
 ```{r}
-fct <- function(x, f) {
-  aggregate_by(meteo[, !grepl(paste(x, collapse = "|"), names(meteo))],
-               month %in% c("January", "May"), year, station, fun = f)
-}
+meteo %>% 
+  mutate(station = recode(month, `January` = "group_month", `May`= "group_month")) %>% 
+  aggregate_by(station, month, year, .funs = list(mean(temperature, humidity), sum(rainfall, sunshine)))
 ```
-
-Then, using this utilitary function `fct` together with the `map2` and `invoke`
-functions of the `purrr` package we can get the targetted output:
-
-```{r}
-library(purrr)
-map2(list(c("rain", "sun"), c("temp", "hum")), c(mean, sum), fct) %>% 
-  invoke(left_join, ., by = c("year", "month", "station"))
-```
-
