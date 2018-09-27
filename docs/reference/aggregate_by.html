@@ -123,7 +123,7 @@ function for the aggregation.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>aggregate_by</span>(<span class='no'>df</span>, <span class='no'>what</span>, <span class='no'>...</span>, <span class='kw'>fun</span> <span class='kw'>=</span> <span class='no'>sum</span>, <span class='kw'>new_name</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>aggregate_by</span>(<span class='no'>df</span>, <span class='no'>col_name</span>, <span class='no'>...</span>, <span class='kw'>.funs</span> <span class='kw'>=</span> <span class='no'>sum</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -133,24 +133,17 @@ function for the aggregation.</p>
       <td><p>the data frame on which to perform the aggregation.</p></td>
     </tr>
     <tr>
-      <th>what</th>
-      <td><p>an expression on the values of the categorical variable used for
-aggregation.</p></td>
+      <th>col_name</th>
+      <td><p>the variable on which to perform the aggregation</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>the variables (unquoted names) on which to perform the aggregation,
-using the funtion <code>fun</code>.</p></td>
+      <td><p>other  variables on which to perform the aggregation</p></td>
     </tr>
     <tr>
-      <th>fun</th>
-      <td><p>the function used to perform the aggregation. By default <code>sum</code>.</p></td>
-    </tr>
-    <tr>
-      <th>new_name</th>
-      <td><p>the new value of the categorical variable, after aggregation.
-By default, it concatenates the values of the categorical variables used in
-<code>what</code>, separating them by " &amp; ".</p></td>
+      <th>.funs</th>
+      <td><p>the function used to perform the aggregation.
+By default <code>sum</code>.</p></td>
     </tr>
     </table>
     
@@ -161,44 +154,33 @@ the observation have been aggregated (i.e. less rows than in `df`).</p>
     
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>The function splits the data frame <code>df</code> in two data frames, based on the
-<code>what</code> argument. On the data frame that contains the values of the
-categorical variable to aggregate (df1), the function performs a
-<code><a href='http://dplyr.tidyverse.org/reference/group_by.html'>group_by</a></code> followed by a <code><a href='http://dplyr.tidyverse.org/reference/summarise_all.html'>summarise_all</a></code>
-with the function <code>fun</code> and then binds it by row with the other data
-frame (df2).</p>
+    <p>On a data frame that contains the values of the categorical variable to
+aggregate (`col_name`, `...`), the function performs a
+<code><a href='http://dplyr.tidyverse.org/reference/group_by.html'>group_by</a></code> followed by a <code><a href='http://dplyr.tidyverse.org/reference/summarise.html'>summarise</a></code>
+with the function(s) <code>.funs</code>.</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'>## A toy data frame:</span>
+    <pre class="examples"><div class='input'>
+<span class='fu'>library</span>(<span class='no'>dplyr</span>)
+
+<span class='co'>## A toy data frame:</span>
 <span class='fu'>set.seed</span>(<span class='fl'>30101976</span>)
 <span class='no'>data</span> <span class='kw'>&lt;-</span> <span class='fu'>expand.grid</span>(<span class='no'>letters</span>[<span class='fl'>1</span>:<span class='fl'>3</span>], <span class='fl'>1</span>:<span class='fl'>3</span>, <span class='fl'>4</span>:<span class='fl'>6</span>)
-<span class='no'>data</span>$<span class='no'>Var4</span> <span class='kw'>&lt;-</span> <span class='fu'>sample</span>(<span class='fl'>1</span>:<span class='fl'>100</span>, <span class='fu'>nrow</span>(<span class='no'>data</span>), <span class='fl'>TRUE</span>)
-<span class='no'>data</span>$<span class='no'>Var5</span> <span class='kw'>&lt;-</span> <span class='fu'>sample</span>(<span class='fl'>1</span>:<span class='fl'>100</span>, <span class='fu'>nrow</span>(<span class='no'>data</span>), <span class='fl'>TRUE</span>)
-<span class='no'>data</span>$<span class='no'>Var6</span> <span class='kw'>&lt;-</span> <span class='fu'>sample</span>(<span class='fl'>1</span>:<span class='fl'>100</span>, <span class='fu'>nrow</span>(<span class='no'>data</span>), <span class='fl'>TRUE</span>)
+<span class='no'>data</span>$<span class='no'>Var4</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='http://dplyr.tidyverse.org/reference/sample.html'>sample</a></span>(<span class='fl'>1</span>:<span class='fl'>100</span>, <span class='fu'>nrow</span>(<span class='no'>data</span>), <span class='fl'>TRUE</span>)
+<span class='no'>data</span>$<span class='no'>Var5</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='http://dplyr.tidyverse.org/reference/sample.html'>sample</a></span>(<span class='fl'>1</span>:<span class='fl'>100</span>, <span class='fu'>nrow</span>(<span class='no'>data</span>), <span class='fl'>TRUE</span>)
+<span class='no'>data</span>$<span class='no'>Var6</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='http://dplyr.tidyverse.org/reference/sample.html'>sample</a></span>(<span class='fl'>1</span>:<span class='fl'>100</span>, <span class='fu'>nrow</span>(<span class='no'>data</span>), <span class='fl'>TRUE</span>)
 
 <span class='co'>## Aggregating the values "a" and "b" of the categorical variable Var1,</span>
 <span class='co'>## summing the values of variables Var4, Var5, Var6 (i.e. all the variables</span>
 <span class='co'>## that are not in the arguments of the function call):</span>
-<span class='fu'>aggregate_by</span>(<span class='no'>data</span>, <span class='no'>Var1</span> <span class='kw'>%in%</span> <span class='fu'>c</span>(<span class='st'>"a"</span>, <span class='st'>"b"</span>), <span class='no'>Var2</span>, <span class='no'>Var3</span>)</div><div class='output co'>#&gt;     Var1 Var2 Var3 Var4 Var5 Var6
-#&gt; 1      c    1    4   49   12   62
-#&gt; 2      c    2    4   42    9    6
-#&gt; 3      c    3    4   16    2   96
-#&gt; 4      c    1    5    5   27   17
-#&gt; 5      c    2    5   27   35   52
-#&gt; 6      c    3    5   21    5   10
-#&gt; 7      c    1    6   41   10   43
-#&gt; 8      c    2    6   35   38    3
-#&gt; 9      c    3    6   28   27    7
-#&gt; 10 a &amp; b    1    4   77  136  142
-#&gt; 11 a &amp; b    1    5  119  116  106
-#&gt; 12 a &amp; b    1    6   14  111  107
-#&gt; 13 a &amp; b    2    4   77  122  117
-#&gt; 14 a &amp; b    2    5   78   33   98
-#&gt; 15 a &amp; b    2    6  113  144  171
-#&gt; 16 a &amp; b    3    4   54   81   82
-#&gt; 17 a &amp; b    3    5  139  138  123
-#&gt; 18 a &amp; b    3    6   49   47   58</div><div class='input'>
+<span class='no'>data</span> <span class='kw'>%&gt;%</span>
+ <span class='fu'><a href='http://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span>(<span class='kw'>Var1</span> <span class='kw'>=</span> <span class='fu'><a href='http://dplyr.tidyverse.org/reference/recode.html'>recode</a></span>(<span class='no'>Var1</span>, <span class='kw'>a</span> <span class='kw'>=</span> <span class='st'>"b"</span>)) <span class='kw'>%&gt;%</span>
+ <span class='fu'>aggregate_by</span>(<span class='no'>data</span>, <span class='no'>Var1</span>, <span class='no'>Var2</span>, <span class='no'>Var3</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: Truncating vector to length 1</span></div><div class='output co'>#&gt; <span class='warning'>Warning: Truncating vector to length 1</span></div><div class='output co'>#&gt; <span class='warning'>Warning: Truncating vector to length 1</span></div><div class='output co'>#&gt; <span class='warning'>Warning: Truncating vector to length 1</span></div><div class='output co'>#&gt; <span class='warning'>Warning: Truncating vector to length 1</span></div><div class='output co'>#&gt; <span class='warning'>Warning: Truncating vector to length 1</span></div><div class='output co'>#&gt; # A tibble: 1 x 6
+#&gt; # Groups:   Var1, Var2, Var3, Var4, Var5 [?]
+#&gt;   Var1   Var2  Var3  Var4  Var5  Var6
+#&gt;   &lt;fct&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;
+#&gt; 1 a         1     4    58    67    66</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

@@ -3,7 +3,7 @@
 dplyrx <img src="man/figures/logo.png" align="right" width=120/>
 ================================================================
 
-[![Travis-CI Build Status](https://travis-ci.org/epix-project/dplyrx.svg?branch=master)](https://travis-ci.org/epix-project/dplyrx) [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/dplyrx)](https://cran.r-project.org/package=dplyrx)
+[![Travis-CI Build Status](https://travis-ci.org/epix-project/dplyrx.svg?branch=master)](https://travis-ci.org/epix-project/dplyrx) [![Codecov test coverage](https://img.shields.io/codecov/c/github/epix-project/dplyrx/master.svg)](https://codecov.io/github/epix-project/dplyrx?branch=master) [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/dplyrx)](https://cran.r-project.org/package=dplyrx)
 
 `dplyrx` is a collection of functions that extend those in the [`dplyr`](https://dplyr.tidyverse.org) package.
 
@@ -31,5 +31,7 @@ data <- cbind(data, data.frame(replicate(3, sample(1:100, nrow(data), TRUE))))
 where `Var1` could be thought of a spatial location name, `Var2` and `Var3` can be thought of year and month and `X1`, `X2` and `X3` can be tought of measured values for given points in space and time. If you want to aggregate the values "a" and "b" of the categorical the variable `Var1`, summing the values of variables X4, X5 and X6, it can be done like this:
 
 ``` r
-dplyrx::aggregate_by(data, Var1, Var2, Var3, expr = . %in% c("a", "b"))
+data %>%
+  mutate(Var1 = recode(Var1, a = "b")) %>%
+  aggregate_by(data, Var1, Var2, Var3)
 ```
