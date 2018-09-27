@@ -4,22 +4,17 @@
 \alias{aggregate_by}
 \title{Aggregating observations on some variables}
 \usage{
-aggregate_by(df, what, ..., fun = sum, new_name = NULL)
+aggregate_by(df, col_name, ..., .funs = sum)
 }
 \arguments{
 \item{df}{the data frame on which to perform the aggregation.}
 
-\item{what}{an expression on the values of the categorical variable used for
-aggregation.}
+\item{col_name}{the variable on which to perform the aggregation}
 
-\item{...}{the variables (unquoted names) on which to perform the aggregation,
-using the funtion \code{fun}.}
+\item{...}{other  variables on which to perform the aggregation}
 
-\item{fun}{the function used to perform the aggregation. By default \code{sum}.}
-
-\item{new_name}{the new value of the categorical variable, after aggregation.
-By default, it concatenates the values of the categorical variables used in
-\code{what}, separating them by " & ".}
+\item{.sfun}{the function used to perform the aggregation.
+By default \code{sum}.}
 }
 \value{
 A data frame with the same variables as `df` but for which some of
@@ -31,12 +26,10 @@ the values of a categorical variable of the same data frame and using a given
 function for the aggregation.
 }
 \details{
-The function splits the data frame \code{df} in two data frames, based on the
-\code{what} argument. On the data frame that contains the values of the
-categorical variable to aggregate (df1), the function performs a
-\code{\link[dplyr]{group_by}} followed by a \code{\link[dplyr]{summarise_all}}
-with the function \code{fun} and then binds it by row with the other data
-frame (df2).
+On a data frame that contains the values of the categorical variable to
+aggregate (`col_name`, `...`), the function performs a
+\code{\link[dplyr]{group_by}} followed by a \code{\link[dplyr]{summarise}}
+with the function(s) \code{.funs}.
 }
 \examples{
 ## A toy data frame:
@@ -49,7 +42,7 @@ data$Var6 <- sample(1:100, nrow(data), TRUE)
 ## Aggregating the values "a" and "b" of the categorical variable Var1,
 ## summing the values of variables Var4, Var5, Var6 (i.e. all the variables
 ## that are not in the arguments of the function call):
-aggregate_by(data, Var1 \%in\% c("a", "b"), Var2, Var3)
+aggregate_by(data, Var1, Var2, Var3)
 
 }
 \author{
