@@ -44,26 +44,69 @@
 #'
 #' @export
 #'
-aggregate_by <- function(df, what, ..., fun = sum, new_name = NULL) {
-#  require(dplyr) # %>%, %<>%, filter, anti_join, mutate_if, bind_rows, select,
-  # group_by, summarise_all, mutate
-  arg_list <- as.list(match.call())
-  what_var <- arg_list$what %>%
-    paste() %>%
-    `[`(. %in% colnames(df))
-  df %<>% mutate_if(is.factor, as.character)
-  df2 <- eval(substitute(df %>% filter(what)))
-  if (is.null(new_name)) {
-    new_name <- select(df2, !!what_var) %>%
-      unlist() %>%
-      unique() %>%
-      paste(collapse = " & ")
+aggregate_by <- function(df, col_name, ..., .funs) {
+
+  res <- try(eval(col_name), silent = TRUE)
+  if (inherits(res, "try-error")) {
+    col_name <- deparse(substitute(col_name))
   }
-  out <- anti_join(df, df2, names(df))
-  df2 %>%
-    select(-!!what_var) %>%
-    group_by(...) %>%
-    summarise_all(fun) %>%
-    mutate(!!what_var := new_name) %>%
-    bind_rows(out, .)
+
+  res <- try(eval(...), silent = TRUE)
+  if (inherits(res, "try-error")) {
+    col_sel <-  as.character(substitute(list(...))) %>%
+      grep("list", ., invert = T, value = T)
+  } else {
+    res1 <- try(eval(substitute(...)), silent = TRUE)
+    if(inherits(res1, "try-error")) {
+      col_sel <- list(...) %>% unlist
+    } else {
+      col_sel <- eval(substitute(list(...))) %>% unlist %>% as.vector()
+    }
+  }
+
+  group_var <-  c(col_name, sel)
+
+  funs <- as.character(substitute(.funs)) %>%
+    grep("list", ., invert = T, value = T) %>%
+    unlist
+
+  if(funs %>% is.element(names(data)) %>% any()){
+
+    group_var <-  c(col_name, sel)
+    x <- enquo(.funs)
+    df %<>% group_by(.dots = group_var) %>%
+      summarise(!!! x)
+
+  } else {
+
+    df <- lapply(funs, function(x) {
+      group_var <-  c(col_name, sel)
+
+      if(grepl("\\,", x)){
+
+        x <- as.character(x)
+        sel <- strsplit(x, ", |,") %>%  unlist %>% strsplit("\\(") %>% unlist
+        msel <- sel[1]
+        x <- paste0(sel, ")", sep = "") %>% gsub("))", ")", .) %>%
+          paste(msel, ., sep = "(") %>% .[-1] %>% unlist
+
+        df <- lapply(x, function(z){
+
+          z <- rlang::parse_expr(z)
+          df %<>% group_by(.dots = group_var) %>%
+            summarise(!! z)
+
+        }) %>%
+          purrr::reduce(left_join, by = group_var)
+
+      } else {
+
+        x <- rlang::parse_expr(x)
+        df %<>% group_by(.dots = group_var) %>%
+          summarise(!! x)
+      }
+    }) %>%
+      purrr::reduce(left_join, by = group_var)
+  }
+  df
 }
