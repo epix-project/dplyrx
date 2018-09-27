@@ -4,22 +4,16 @@
 #' the values of a categorical variable of the same data frame and using a given
 #' function for the aggregation.
 #'
-#' The function splits the data frame \code{df} in two data frames, based on the
-#' \code{what} argument. On the data frame that contains the values of the
-#' categorical variable to aggregate (df1), the function performs a
-#' \code{\link[dplyr]{group_by}} followed by a \code{\link[dplyr]{summarise_all}}
-#' with the function \code{fun} and then binds it by row with the other data
-#' frame (df2).
+#' On a data frame that contains the values of the categorical variable to
+#' aggregate (`col_name`, `...`), the function performs a
+#' \code{\link[dplyr]{group_by}} followed by a \code{\link[dplyr]{summarise}}
+#' with the function(s) \code{.funs}.
 #'
 #' @param df the data frame on which to perform the aggregation.
-#' @param what an expression on the values of the categorical variable used for
-#' aggregation.
-#' @param ... the variables (unquoted names) on which to perform the aggregation,
-#' using the funtion \code{fun}.
-#' @param fun the function used to perform the aggregation. By default \code{sum}.
-#' @param new_name the new value of the categorical variable, after aggregation.
-#' By default, it concatenates the values of the categorical variables used in
-#' \code{what}, separating them by " & ".
+#' @param col_name the variable on which to perform the aggregation
+#' @param ... other  variables on which to perform the aggregation
+#' @param .sfun the function used to perform the aggregation.
+#' By default \code{sum}.
 #'
 #' @return A data frame with the same variables as `df` but for which some of
 #' the observation have been aggregated (i.e. less rows than in `df`).
@@ -37,14 +31,14 @@
 #' ## Aggregating the values "a" and "b" of the categorical variable Var1,
 #' ## summing the values of variables Var4, Var5, Var6 (i.e. all the variables
 #' ## that are not in the arguments of the function call):
-#' aggregate_by(data, Var1 %in% c("a", "b"), Var2, Var3)
+#' aggregate_by(data, Var1, Var2, Var3)
 #'
 #' @importFrom magrittr %>% %<>%
-#' @importFrom dplyr filter anti_join mutate_if bind_rows select group_by summarise_all mutate
+#' @importFrom dplyr filter anti_join mutate_if bind_rows select group_by
+#' summarise_all mutate
 #'
 #' @export
-#'
-aggregate_by <- function(df, col_name, ..., .funs) {
+aggregate_by <- function(df, col_name, ..., .funs = sum) {
 
   res <- try(eval(col_name), silent = TRUE)
   if (inherits(res, "try-error")) {
@@ -64,7 +58,7 @@ aggregate_by <- function(df, col_name, ..., .funs) {
     }
   }
 
-  group_var <-  c(col_name, sel)
+  group_var <-  c(col_name, col_sel)
 
   funs <- as.character(substitute(.funs)) %>%
     grep("list", ., invert = T, value = T) %>%
@@ -75,7 +69,7 @@ aggregate_by <- function(df, col_name, ..., .funs) {
   if (funs %>% is.element(names(data)) %>% any()) {
     print("funs contains one element which is element names(df)")
 
-    group_var <-  c(col_name, sel)
+    #group_var <-  c(col_name, col_sel)
     x <- enquo(.funs)
     df %<>% group_by(.dots = group_var) %>%
       summarise(!!! x)
@@ -90,7 +84,7 @@ aggregate_by <- function(df, col_name, ..., .funs) {
     print("funs contains names(df) with other element")
 
     df <- lapply(funs, function(x) {
-      group_var <-  c(col_name, sel)
+      #group_var <-  c(col_name, col_sel)
 
       if(grepl("\\,", x)){
 
