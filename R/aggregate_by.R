@@ -70,14 +70,24 @@ aggregate_by <- function(df, col_name, ..., .funs) {
     grep("list", ., invert = T, value = T) %>%
     unlist
 
-  if(funs %>% is.element(names(data)) %>% any()){
+  print(funs)
+
+  if (funs %>% is.element(names(data)) %>% any()) {
+    print("funs contains one element which is element names(df)")
 
     group_var <-  c(col_name, sel)
     x <- enquo(.funs)
     df %<>% group_by(.dots = group_var) %>%
       summarise(!!! x)
 
-  } else {
+  } else if (grepl(paste(names(df), collapse = "|"), funs) %>% any == FALSE) {
+    print("funs is not math of names(df)")
+
+    df %<>% group_by(.dots = group_var) %>%
+      summarise_all(funs)
+
+  } else{
+    print("funs contains names(df) with other element")
 
     df <- lapply(funs, function(x) {
       group_var <-  c(col_name, sel)
