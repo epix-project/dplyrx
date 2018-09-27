@@ -23,7 +23,8 @@ Depends: R (>= 2.10),
     magrittr,
     purrr,
     rlang
-Suggests: knitr,
+Suggests: covr, 
+    knitr,
     rmarkdown,
     testthat
 VignetteBuilder: knitr

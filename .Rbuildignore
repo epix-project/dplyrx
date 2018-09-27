@@ -4,3 +4,4 @@
 ^README-.*\.png$
 ^\.travis\.yml$
 ^ignored/.*$
+^codecov\.yml$
