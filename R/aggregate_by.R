@@ -21,6 +21,9 @@
 #' @author Marc Choisy and Lucie Contamin.
 #'
 #' @examples
+#'
+#' library(dplyr)
+#'
 #' ## A toy data frame:
 #' set.seed(30101976)
 #' data <- expand.grid(letters[1:3], 1:3, 4:6)
@@ -31,7 +34,9 @@
 #' ## Aggregating the values "a" and "b" of the categorical variable Var1,
 #' ## summing the values of variables Var4, Var5, Var6 (i.e. all the variables
 #' ## that are not in the arguments of the function call):
-#' aggregate_by(data, Var1, Var2, Var3)
+#' data %>%
+#'  mutate(Var1 = recode(Var1, a = "b")) %>%
+#'  aggregate_by(data, Var1, Var2, Var3)
 #'
 #' @importFrom magrittr %>% %<>%
 #' @importFrom dplyr filter anti_join mutate_if bind_rows select group_by
