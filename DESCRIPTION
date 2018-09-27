@@ -22,5 +22,6 @@ Depends: R (>= 2.10),
     dplyr,
     magrittr
 Suggests: knitr,
-    rmarkdown
+    rmarkdown,
+    testthat
 VignetteBuilder: knitr
