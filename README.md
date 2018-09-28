@@ -3,7 +3,7 @@
 dplyrx <img src="man/figures/logo.png" align="right" width=120/>
 ================================================================
 
-[![Travis-CI Build Status](https://travis-ci.org/epix-project/dplyrx.svg?branch=master)](https://travis-ci.org/epix-project/dplyrx) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/epix-project/dplyrx?branch=master&svg=true)](https://ci.appveyor.com/project/epix-project/dplyrx) [![Codecov test coverage](https://img.shields.io/codecov/c/github/epix-project/dplyrx/master.svg)](https://codecov.io/github/epix-project/dplyrx?branch=master) [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/dplyrx)](https://cran.r-project.org/package=dplyrx)
+[![Travis-CI Build Status](https://travis-ci.org/epix-project/dplyrx.svg?branch=master)](https://travis-ci.org/epix-project/dplyrx) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/epixproject/dplyrx?branch=master&svg=true)](https://ci.appveyor.com/project/epixproject/dplyrx) [![Codecov test coverage](https://img.shields.io/codecov/c/github/epix-project/dplyrx/master.svg)](https://codecov.io/github/epix-project/dplyrx?branch=master) [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/dplyrx)](https://cran.r-project.org/package=dplyrx)
 
 `dplyrx` is a collection of functions that extend those in the [`dplyr`](https://dplyr.tidyverse.org) package.
 
