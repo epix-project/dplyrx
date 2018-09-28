@@ -203,22 +203,23 @@ meteo <span class="op">%&gt;%</span><span class="st"> </span>
 <a href="#a-more-complex-situation" class="anchor"></a>A more complex situation</h2>
 <p>Let’s now consider the case where, with the <code>meteo</code> data set, instead of performing a spatial aggregation we want to perform a temporal aggregation. Let’s imagine for example that we want to aggregate the months of January and May for all the provinces. What’s apparent here is that the proper way of performing such an aggregation for the variables <code>temperature</code> and <code>humidity</code> would probably to use the <code>mean</code> function whereas it would certainly make more sense to use the <code>sum</code> function for the variables <code>rainfall</code> and <code>sunshine</code>. The pipeline below shows how to do so:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">meteo <span class="op">%&gt;%</span><span class="st"> </span>
-<span class="st">  </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">station =</span> <span class="kw"><a href="http://dplyr.tidyverse.org/reference/recode.html">recode</a></span>(month, <span class="st">`</span><span class="dt">January</span><span class="st">`</span> =<span class="st"> "group_month"</span>, <span class="st">`</span><span class="dt">May</span><span class="st">`</span>=<span class="st"> "group_month"</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">month =</span> <span class="kw"><a href="http://dplyr.tidyverse.org/reference/recode.html">recode</a></span>(month, <span class="st">`</span><span class="dt">January</span><span class="st">`</span> =<span class="st"> "group_month"</span>, <span class="st">`</span><span class="dt">May</span><span class="st">`</span>=<span class="st"> "group_month"</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span><span class="kw"><a href="../reference/aggregate_by.html">aggregate_by</a></span>(station, month, year, <span class="dt">.funs =</span> <span class="kw">list</span>(<span class="kw">mean</span>(temperature, humidity), <span class="kw">sum</span>(rainfall, sunshine)))
-<span class="co">#&gt; # A tibble: 9 x 7</span>
+<span class="co">#&gt; # A tibble: 24 x 7</span>
 <span class="co">#&gt; # Groups:   station, month [?]</span>
-<span class="co">#&gt;   station   month   year `mean(temperatu… `mean(humidity)` `sum(rainfall)`</span>
-<span class="co">#&gt;   &lt;ord&gt;     &lt;ord&gt;  &lt;int&gt;            &lt;dbl&gt;            &lt;dbl&gt;           &lt;dbl&gt;</span>
-<span class="co">#&gt; 1 group_mo… Janua…  2013             17.9             18.2            82.7</span>
-<span class="co">#&gt; 2 group_mo… Janua…  2014             16.9             16.2           105. </span>
-<span class="co">#&gt; 3 group_mo… Janua…  2015             17.8             17.1           136. </span>
-<span class="co">#&gt; 4 group_mo… May     2013             24.4             25.4           882. </span>
-<span class="co">#&gt; 5 group_mo… May     2014             24.7             25.2           646. </span>
-<span class="co">#&gt; 6 group_mo… May     2015             25.2             25.1           783. </span>
-<span class="co">#&gt; 7 September Septe…  2013             22.4             24.3          1777. </span>
-<span class="co">#&gt; 8 September Septe…  2014             23.3             25.2          1097. </span>
-<span class="co">#&gt; 9 September Septe…  2015             23.8             25.4          1259. </span>
-<span class="co">#&gt; # ... with 1 more variable: `sum(sunshine)` &lt;dbl&gt;</span></code></pre></div>
+<span class="co">#&gt;    station month    year `mean(temperatu… `mean(humidity)` `sum(rainfall)`</span>
+<span class="co">#&gt;    &lt;fct&gt;   &lt;ord&gt;   &lt;int&gt;            &lt;dbl&gt;            &lt;dbl&gt;           &lt;dbl&gt;</span>
+<span class="co">#&gt;  1 Can Tho group_…  2013             27.5             29.2            184.</span>
+<span class="co">#&gt;  2 Can Tho group_…  2014             27.0             27.6            198.</span>
+<span class="co">#&gt;  3 Can Tho group_…  2015             27.4             27.8            168.</span>
+<span class="co">#&gt;  4 Can Tho Septem…  2013             27.1             30.5            337.</span>
+<span class="co">#&gt;  5 Can Tho Septem…  2014             27.3             30.2            298.</span>
+<span class="co">#&gt;  6 Can Tho Septem…  2015             27.7             30.9            289.</span>
+<span class="co">#&gt;  7 Da Lat  group_…  2013             18.1             17.2            274.</span>
+<span class="co">#&gt;  8 Da Lat  group_…  2014             17.3             16.5            332.</span>
+<span class="co">#&gt;  9 Da Lat  group_…  2015             17.8             17              282.</span>
+<span class="co">#&gt; 10 Da Lat  Septem…  2013             18.3             18.8            390.</span>
+<span class="co">#&gt; # ... with 14 more rows, and 1 more variable: `sum(sunshine)` &lt;dbl&gt;</span></code></pre></div>
 </div>
   </div>
 

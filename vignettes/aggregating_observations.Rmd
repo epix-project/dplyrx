@@ -81,6 +81,6 @@ pipeline below shows how to do so:
 
 ```{r}
 meteo %>% 
-  mutate(station = recode(month, `January` = "group_month", `May`= "group_month")) %>% 
+  mutate(month = recode(month, `January` = "group_month", `May`= "group_month")) %>% 
   aggregate_by(station, month, year, .funs = list(mean(temperature, humidity), sum(rainfall, sunshine)))
 ```
