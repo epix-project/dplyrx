@@ -26,9 +26,12 @@
 #' ## Whereas mutate2 does not:
 #' mtcars %>% mutate2(a_new_variable = 3) %>% attributes()
 #'
+#' @importFrom dplyr mutate
+#' @importFrom magrittr %<>%
+#'
+#' @export
+#'
 mutate2 <- function(.data, ...) {
-  require(magrittr)
-  require(dplyr)
   old_attributes <- attributes(.data)
   .data %<>% mutate(...)
   new_attributes <- attributes(.data)
