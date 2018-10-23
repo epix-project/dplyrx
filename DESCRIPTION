@@ -22,6 +22,7 @@ Depends: R (>= 2.10),
     dplyr,
     magrittr,
     purrr,
+    stringr,
     rlang
 Suggests: covr, 
     knitr,
