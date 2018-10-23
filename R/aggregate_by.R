@@ -13,7 +13,8 @@
 #' @param col_name the variable on which to perform the aggregation
 #' @param ... other  variables on which to perform the aggregation
 #' @param .funs the function used to perform the aggregation.
-#' By default \code{sum}.
+#' By default \code{sum}. Inputed as a function name, string vector or a list of
+#' names.
 #'
 #' @return A data frame with the same variables as `df` but for which some of
 #' the observation have been aggregated (i.e. less rows than in `df`).
@@ -35,8 +36,23 @@
 #' ## summing the values of variables Var4, Var5, Var6 (i.e. all the variables
 #' ## that are not in the arguments of the function call):
 #' data %>%
+#'  dplyr::mutate(Var1 = recode(Var1, a = "b")) %>%
+#'  aggregate_by(Var1, Var2, Var3)
+#'
+#' ## To calculate the mean value:
+#' data %>%
 #'  mutate(Var1 = recode(Var1, a = "b")) %>%
-#'  aggregate_by(data, Var1, Var2, Var3)
+#'  aggregate_by(Var1, Var2, Var3, .funs = mean)
+#'
+#' ## To calculate the mean and the sum:
+#'  data %>%
+#'  mutate(Var1 = recode(Var1, a = "b")) %>%
+#'  aggregate_by(Var1, Var2, Var3, .funs = list(sum(Var6), mean(Var4)))
+#'
+#'  ## or to apply it to all the columns:
+#'  data %>%
+#'  mutate(Var1 = recode(Var1, a = "b")) %>%
+#'  aggregate_by(Var1, Var2, Var3, .funs = list(sum, mean))
 #'
 #' @importFrom magrittr %>% %<>%
 #' @importFrom dplyr filter anti_join mutate_if bind_rows select group_by

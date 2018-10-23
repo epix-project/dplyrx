@@ -17,6 +17,12 @@ You can install dplyrx from github with:
 devtools::install_github("epix-project/dplyrx")
 ```
 
+To load the package:
+
+``` r
+library(dplyrx)
+```
+
 Example
 -------
 
@@ -33,5 +39,28 @@ where `Var1` could be thought of a spatial location name, `Var2` and `Var3` can 
 ``` r
 data %>%
   mutate(Var1 = recode(Var1, a = "b")) %>%
-  aggregate_by(data, Var1, Var2, Var3)
+  aggregate_by(Var1, Var2, Var3)
+#> [1] "Var1" "Var2" "Var3"
+#> # A tibble: 18 x 6
+#> # Groups:   Var1, Var2 [?]
+#>    Var1   Var2  Var3    X1    X2    X3
+#>    <fct> <int> <int> <int> <int> <int>
+#>  1 b         1     4    77   136   142
+#>  2 b         1     5   119   116   106
+#>  3 b         1     6    14   111   107
+#>  4 b         2     4    77   122   117
+#>  5 b         2     5    78    33    98
+#>  6 b         2     6   113   144   171
+#>  7 b         3     4    54    81    82
+#>  8 b         3     5   139   138   123
+#>  9 b         3     6    49    47    58
+#> 10 c         1     4    49    12    62
+#> 11 c         1     5     5    27    17
+#> 12 c         1     6    41    10    43
+#> 13 c         2     4    42     9     6
+#> 14 c         2     5    27    35    52
+#> 15 c         2     6    35    38     3
+#> 16 c         3     4    16     2    96
+#> 17 c         3     5    21     5    10
+#> 18 c         3     6    28    27     7
 ```
