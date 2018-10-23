@@ -156,15 +156,15 @@ test_that("`aggregate_by` behaviours during programming", {
     summarise_all(mean)
 
   # Test inside a function
-  do_aggregate <- function(df, col_name){
-    sel <- c("Var2", "Var3")
-    df <- aggregate_by(df, col_name, sel)
+  do_aggregate <- function(df, group_var){
+    df <- aggregate_by(df, Var1, group_var)
     df
   }
 
+  group_var <- c("Var2", "Var3")
   test10 <- data %>%
     mutate(Var1 = recode(Var1, a = "b")) %>%
-    do_aggregate("Var1")
+    do_aggregate(group_var)
   testthat::expect_equal(test10, sum_all)
 
   # expect results with both mean and sum function
@@ -188,21 +188,21 @@ test_that("`aggregate_by` behaviours during programming", {
   expect <- list(mean4,mean5, sum6) %>% purrr::reduce(left_join)
 
   # Test2 inside a function
-  do_aggregate2 <- function(df, col_name, functs){
-    sel <- c("Var2", "Var3")
-    df <- aggregate_by(df, col_name, sel, .funs = functs)
+  do_aggregate2 <- function(df, col_name, group_var, functs){
+    aggregate_by(df, col_name, group_var, .funs = functs)
   }
 
+  sel <- c("Var2", "Var3")
   funs1 <- list("sum", "mean")
   test11 <- data %>%
     mutate(Var1 = recode(Var1, a = "b")) %>%
-    do_aggregate2("Var1", funs1)
+    do_aggregate2("Var1", sel, funs1)
   testthat::expect_equal(test11, expect_all)
 
   funs2 <- list("mean(Var4, Var5)", "sum(Var6)")
   test12 <- data %>%
     mutate(Var1 = recode(Var1, a = "b")) %>%
-    do_aggregate2("Var1", funs2)
+    do_aggregate2("Var1", sel, funs2)
   testthat::expect_equal(test12, expect)
 
 })
