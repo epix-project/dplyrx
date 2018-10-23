@@ -137,3 +137,35 @@ columns name imputed", {
    expect_equal(test9, sum_all)
 
 })
+
+test_that("`aggregate_by` behaviours during programming", {
+
+  # create a simple data frame
+  set.seed(30101976)
+  data <- expand.grid(letters[1:3], 1:3, 4:6)
+  data$Var4 <- sample(1:100, nrow(data), TRUE)
+  data$Var5 <- sample(1:100, nrow(data), TRUE)
+  data$Var6 <- sample(1:100, nrow(data), TRUE)
+
+  # expected results
+  sum_all <- data %>%
+    mutate(Var1 = recode(Var1, a = "b")) %>% group_by(Var1, Var2, Var3) %>%
+    summarise_all(sum)
+
+  # Test inside a function
+  my_aggregate_by <- function(df, col_name, sel) {
+    aggregate_by(df, col_name, sel)
+  }
+
+  do_aggregate <- function(df, col_name){
+    sel <- c("Var2", "Var3")
+    df <- aggregate_by(df, col_name, sel)
+    df
+  }
+
+  test10 <- data %>%
+    mutate(Var1 = recode(Var1, a = "b")) %>%
+    do_aggregate("Var1")
+  expect_equal(test10, sum_all)
+
+})
