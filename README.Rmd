@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
 # dplyrx <img src="man/figures/logo.png" align="right" width=120/>
 
 [![Travis-CI Build Status](https://travis-ci.org/epix-project/dplyrx.svg?branch=master)](https://travis-ci.org/epix-project/dplyrx)
-[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/epix-project/dplyrx?branch=master&svg=true)](https://ci.appveyor.com/project/epix-project/dplyrx)
+[![AppVeyor Build status](https://ci.appveyor.com/api/projects/status/y8exchgxy2rugjw8/branch/master?svg=true)](https://ci.appveyor.com/project/epixproject/dplyrx/branch/master)
 [![Codecov test coverage](https://img.shields.io/codecov/c/github/epix-project/dplyrx/master.svg)](https://codecov.io/github/epix-project/dplyrx?branch=master)
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/dplyrx)](https://cran.r-project.org/package=dplyrx)
 
