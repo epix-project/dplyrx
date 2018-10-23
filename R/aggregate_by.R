@@ -61,6 +61,8 @@ aggregate_by <- function(df, col_name, ..., .funs = sum) {
     res1 <- try(eval(substitute(...)), silent = TRUE)
     if(inherits(res1, "try-error")) {
       col_sel <- list(...) %>% unlist
+    } else {
+      col_sel <- eval(substitute(list(...))) %>% unlist %>% as.vector()
     }
   }
 
