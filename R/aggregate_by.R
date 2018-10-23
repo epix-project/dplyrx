@@ -43,6 +43,7 @@
 #' summarise_all mutate enquo summarise left_join
 #' @importFrom purrr reduce
 #' @importFrom rlang parse_expr
+#' @importFrom stringr str_detect
 #'
 #' @export
 aggregate_by <- function(df, col_name, ..., .funs = sum) {
@@ -65,24 +66,33 @@ aggregate_by <- function(df, col_name, ..., .funs = sum) {
 
   group_var <-  c(col_name, col_sel)
 
-  funs <- as.character(substitute(.funs)) %>%
+  funcs <- as.character(substitute(.funs)) %>%
     grep("list", ., invert = T, value = T) %>%
     unlist
 
-  if (funs %>% is.element(names(df)) %>% any()) {
+  test <- funcs %>% as.character() %>% unlist %>%
+    strsplit("\\, |\\(|\\)") %>% unlist
+  sel <- test %>% stringr::str_detect(paste(names(df), collapse = "|"))
+  func_res <- try(lapply(test[!sel], function(x) match.fun(x)), silent = TRUE)
+
+  if (inherits(func_res, "try-error")) {
+    funcs <- unlist(.funs)
+  }
+
+  if (funcs %>% is.element(names(df)) %>% any()) {
 
     x <- enquo(.funs)
     df %<>% group_by(.dots = group_var) %>%
       summarise(!!! x)
 
-  } else if (grepl(paste(names(df), collapse = "|"), funs) %>% any == FALSE) {
+  } else if (grepl(paste(names(df), collapse = "|"), funcs) %>% any == FALSE) {
 
     df %<>% group_by(.dots = group_var) %>%
-      summarise_all(funs)
+      summarise_all(funcs)
 
   } else{
 
-    df <- lapply(funs, function(x) {
+    df <- lapply(funcs, function(x) {
 
       if(grepl("\\,", x)){
 
