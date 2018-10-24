@@ -36,9 +36,10 @@ mutate2 <- function(.data, ...) {
   old_class <- class(.data)
   .data %<>% mutate(...)
   new_attributes <- attributes(.data)
-  missing_attributes <- old_attributes[! names(old_attributes) %in% names(new_attributes)]
+  missing_attributes <- old_attributes[! names(old_attributes) %in%
+                                         names(new_attributes)]
   if (length(missing_attributes) > 0)
-    for(i in seq_along(missing_attributes))
+    for (i in seq_along(missing_attributes))
       attr(.data, names(missing_attributes)[i]) <- missing_attributes[[i]]
   class(.data) <- old_class
   .data
