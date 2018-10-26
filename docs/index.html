@@ -96,6 +96,8 @@
 <p>You can install dplyrx from github with:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># install.packages("devtools")</span>
 devtools<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/devtools/topics/install_github">install_github</a></span>(<span class="st">"epix-project/dplyrx"</span>)</code></pre></div>
+<p>To load the package:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(dplyrx)</code></pre></div>
 </div>
 <div id="example" class="section level2">
 <h2 class="hasAnchor">
@@ -107,7 +109,29 @@ data &lt;-<span class="st"> </span><span class="kw">cbind</span>(data, <span cla
 <p>where <code>Var1</code> could be thought of a spatial location name, <code>Var2</code> and <code>Var3</code> can be thought of year and month and <code>X1</code>, <code>X2</code> and <code>X3</code> can be tought of measured values for given points in space and time. If you want to aggregate the values “a” and “b” of the categorical the variable <code>Var1</code>, summing the values of variables X4, X5 and X6, it can be done like this:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">data <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">mutate</span>(<span class="dt">Var1 =</span> <span class="kw">recode</span>(Var1, <span class="dt">a =</span> <span class="st">"b"</span>)) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw"><a href="reference/aggregate_by.html">aggregate_by</a></span>(data, Var1, Var2, Var3)</code></pre></div>
+<span class="st">  </span><span class="kw"><a href="reference/aggregate_by.html">aggregate_by</a></span>(Var1, Var2, Var3)
+<span class="co">#&gt; # A tibble: 18 x 6</span>
+<span class="co">#&gt; # Groups:   Var1, Var2 [?]</span>
+<span class="co">#&gt;    Var1   Var2  Var3    X1    X2    X3</span>
+<span class="co">#&gt;    &lt;fct&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;</span>
+<span class="co">#&gt;  1 b         1     4    77   136   142</span>
+<span class="co">#&gt;  2 b         1     5   119   116   106</span>
+<span class="co">#&gt;  3 b         1     6    14   111   107</span>
+<span class="co">#&gt;  4 b         2     4    77   122   117</span>
+<span class="co">#&gt;  5 b         2     5    78    33    98</span>
+<span class="co">#&gt;  6 b         2     6   113   144   171</span>
+<span class="co">#&gt;  7 b         3     4    54    81    82</span>
+<span class="co">#&gt;  8 b         3     5   139   138   123</span>
+<span class="co">#&gt;  9 b         3     6    49    47    58</span>
+<span class="co">#&gt; 10 c         1     4    49    12    62</span>
+<span class="co">#&gt; 11 c         1     5     5    27    17</span>
+<span class="co">#&gt; 12 c         1     6    41    10    43</span>
+<span class="co">#&gt; 13 c         2     4    42     9     6</span>
+<span class="co">#&gt; 14 c         2     5    27    35    52</span>
+<span class="co">#&gt; 15 c         2     6    35    38     3</span>
+<span class="co">#&gt; 16 c         3     4    16     2    96</span>
+<span class="co">#&gt; 17 c         3     5    21     5    10</span>
+<span class="co">#&gt; 18 c         3     6    28    27     7</span></code></pre></div>
 </div>
 </div>
   </div>

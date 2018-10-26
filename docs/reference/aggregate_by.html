@@ -147,7 +147,8 @@ function for the aggregation.</p>
     <tr>
       <th>.funs</th>
       <td><p>the function used to perform the aggregation.
-By default <code>sum</code>.</p></td>
+By default <code>sum</code>. Inputed as a function name, string vector or a list of
+names.</p></td>
     </tr>
     </table>
     
@@ -179,12 +180,104 @@ with the function(s) <code>.funs</code>.</p>
 <span class='co'>## summing the values of variables Var4, Var5, Var6 (i.e. all the variables</span>
 <span class='co'>## that are not in the arguments of the function call):</span>
 <span class='no'>data</span> <span class='kw'>%&gt;%</span>
- <span class='fu'><a href='http://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span>(<span class='kw'>Var1</span> <span class='kw'>=</span> <span class='fu'><a href='http://dplyr.tidyverse.org/reference/recode.html'>recode</a></span>(<span class='no'>Var1</span>, <span class='kw'>a</span> <span class='kw'>=</span> <span class='st'>"b"</span>)) <span class='kw'>%&gt;%</span>
- <span class='fu'>aggregate_by</span>(<span class='no'>data</span>, <span class='no'>Var1</span>, <span class='no'>Var2</span>, <span class='no'>Var3</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: Truncating vector to length 1</span></div><div class='output co'>#&gt; <span class='warning'>Warning: Truncating vector to length 1</span></div><div class='output co'>#&gt; <span class='warning'>Warning: Truncating vector to length 1</span></div><div class='output co'>#&gt; <span class='warning'>Warning: Truncating vector to length 1</span></div><div class='output co'>#&gt; <span class='warning'>Warning: Truncating vector to length 1</span></div><div class='output co'>#&gt; <span class='warning'>Warning: Truncating vector to length 1</span></div><div class='output co'>#&gt; [90m# A tibble: 1 x 6[39m
-#&gt; [90m# Groups:   Var1, Var2, Var3, Var4, Var5 [?][39m
-#&gt;   Var1   Var2  Var3  Var4  Var5  Var6
-#&gt;   [3m[90m&lt;fct&gt;[39m[23m [3m[90m&lt;int&gt;[39m[23m [3m[90m&lt;int&gt;[39m[23m [3m[90m&lt;int&gt;[39m[23m [3m[90m&lt;int&gt;[39m[23m [3m[90m&lt;int&gt;[39m[23m
-#&gt; [90m1[39m a         1     4    58    67    66</div><div class='input'>
+  <span class='fu'><a href='http://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span>(<span class='kw'>Var1</span> <span class='kw'>=</span> <span class='fu'><a href='http://dplyr.tidyverse.org/reference/recode.html'>recode</a></span>(<span class='no'>Var1</span>, <span class='kw'>a</span> <span class='kw'>=</span> <span class='st'>"b"</span>)) <span class='kw'>%&gt;%</span>
+  <span class='fu'>aggregate_by</span>(<span class='no'>Var1</span>, <span class='no'>Var2</span>, <span class='no'>Var3</span>)</div><div class='output co'>#&gt; [90m# A tibble: 18 x 6[39m
+#&gt; [90m# Groups:   Var1, Var2 [?][39m
+#&gt;    Var1   Var2  Var3  Var4  Var5  Var6
+#&gt;    [3m[90m&lt;fct&gt;[39m[23m [3m[90m&lt;int&gt;[39m[23m [3m[90m&lt;int&gt;[39m[23m [3m[90m&lt;int&gt;[39m[23m [3m[90m&lt;int&gt;[39m[23m [3m[90m&lt;int&gt;[39m[23m
+#&gt; [90m 1[39m b         1     4    77   136   142
+#&gt; [90m 2[39m b         1     5   119   116   106
+#&gt; [90m 3[39m b         1     6    14   111   107
+#&gt; [90m 4[39m b         2     4    77   122   117
+#&gt; [90m 5[39m b         2     5    78    33    98
+#&gt; [90m 6[39m b         2     6   113   144   171
+#&gt; [90m 7[39m b         3     4    54    81    82
+#&gt; [90m 8[39m b         3     5   139   138   123
+#&gt; [90m 9[39m b         3     6    49    47    58
+#&gt; [90m10[39m c         1     4    49    12    62
+#&gt; [90m11[39m c         1     5     5    27    17
+#&gt; [90m12[39m c         1     6    41    10    43
+#&gt; [90m13[39m c         2     4    42     9     6
+#&gt; [90m14[39m c         2     5    27    35    52
+#&gt; [90m15[39m c         2     6    35    38     3
+#&gt; [90m16[39m c         3     4    16     2    96
+#&gt; [90m17[39m c         3     5    21     5    10
+#&gt; [90m18[39m c         3     6    28    27     7</div><div class='input'>
+<span class='co'>## To calculate the mean value:</span>
+<span class='no'>data</span> <span class='kw'>%&gt;%</span>
+  <span class='fu'><a href='http://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span>(<span class='kw'>Var1</span> <span class='kw'>=</span> <span class='fu'><a href='http://dplyr.tidyverse.org/reference/recode.html'>recode</a></span>(<span class='no'>Var1</span>, <span class='kw'>a</span> <span class='kw'>=</span> <span class='st'>"b"</span>)) <span class='kw'>%&gt;%</span>
+  <span class='fu'>aggregate_by</span>(<span class='no'>Var1</span>, <span class='no'>Var2</span>, <span class='no'>Var3</span>, <span class='kw'>.funs</span> <span class='kw'>=</span> <span class='no'>mean</span>)</div><div class='output co'>#&gt; [90m# A tibble: 18 x 6[39m
+#&gt; [90m# Groups:   Var1, Var2 [?][39m
+#&gt;    Var1   Var2  Var3  Var4  Var5  Var6
+#&gt;    [3m[90m&lt;fct&gt;[39m[23m [3m[90m&lt;int&gt;[39m[23m [3m[90m&lt;int&gt;[39m[23m [3m[90m&lt;dbl&gt;[39m[23m [3m[90m&lt;dbl&gt;[39m[23m [3m[90m&lt;dbl&gt;[39m[23m
+#&gt; [90m 1[39m b         1     4  38.5  68    71  
+#&gt; [90m 2[39m b         1     5  59.5  58    53  
+#&gt; [90m 3[39m b         1     6   7    55.5  53.5
+#&gt; [90m 4[39m b         2     4  38.5  61    58.5
+#&gt; [90m 5[39m b         2     5  39    16.5  49  
+#&gt; [90m 6[39m b         2     6  56.5  72    85.5
+#&gt; [90m 7[39m b         3     4  27    40.5  41  
+#&gt; [90m 8[39m b         3     5  69.5  69    61.5
+#&gt; [90m 9[39m b         3     6  24.5  23.5  29  
+#&gt; [90m10[39m c         1     4  49    12    62  
+#&gt; [90m11[39m c         1     5   5    27    17  
+#&gt; [90m12[39m c         1     6  41    10    43  
+#&gt; [90m13[39m c         2     4  42     9     6  
+#&gt; [90m14[39m c         2     5  27    35    52  
+#&gt; [90m15[39m c         2     6  35    38     3  
+#&gt; [90m16[39m c         3     4  16     2    96  
+#&gt; [90m17[39m c         3     5  21     5    10  
+#&gt; [90m18[39m c         3     6  28    27     7  </div><div class='input'>
+<span class='co'>## or to apply it to all the columns:</span>
+<span class='no'>data</span> <span class='kw'>%&gt;%</span>
+  <span class='fu'><a href='http://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span>(<span class='kw'>Var1</span> <span class='kw'>=</span> <span class='fu'><a href='http://dplyr.tidyverse.org/reference/recode.html'>recode</a></span>(<span class='no'>Var1</span>, <span class='kw'>a</span> <span class='kw'>=</span> <span class='st'>"b"</span>)) <span class='kw'>%&gt;%</span>
+  <span class='fu'>aggregate_by</span>(<span class='no'>Var1</span>, <span class='no'>Var2</span>, <span class='no'>Var3</span>, <span class='kw'>.funs</span> <span class='kw'>=</span> <span class='fu'>list</span>(<span class='no'>sum</span>, <span class='no'>mean</span>))</div><div class='output co'>#&gt; [90m# A tibble: 18 x 9[39m
+#&gt; [90m# Groups:   Var1, Var2 [?][39m
+#&gt;    Var1   Var2  Var3 Var4_sum Var5_sum Var6_sum Var4_mean Var5_mean Var6_mean
+#&gt;    [3m[90m&lt;fct&gt;[39m[23m [3m[90m&lt;int&gt;[39m[23m [3m[90m&lt;int&gt;[39m[23m    [3m[90m&lt;int&gt;[39m[23m    [3m[90m&lt;int&gt;[39m[23m    [3m[90m&lt;int&gt;[39m[23m     [3m[90m&lt;dbl&gt;[39m[23m     [3m[90m&lt;dbl&gt;[39m[23m     [3m[90m&lt;dbl&gt;[39m[23m
+#&gt; [90m 1[39m b         1     4       77      136      142      38.5      68        71  
+#&gt; [90m 2[39m b         1     5      119      116      106      59.5      58        53  
+#&gt; [90m 3[39m b         1     6       14      111      107       7        55.5      53.5
+#&gt; [90m 4[39m b         2     4       77      122      117      38.5      61        58.5
+#&gt; [90m 5[39m b         2     5       78       33       98      39        16.5      49  
+#&gt; [90m 6[39m b         2     6      113      144      171      56.5      72        85.5
+#&gt; [90m 7[39m b         3     4       54       81       82      27        40.5      41  
+#&gt; [90m 8[39m b         3     5      139      138      123      69.5      69        61.5
+#&gt; [90m 9[39m b         3     6       49       47       58      24.5      23.5      29  
+#&gt; [90m10[39m c         1     4       49       12       62      49        12        62  
+#&gt; [90m11[39m c         1     5        5       27       17       5        27        17  
+#&gt; [90m12[39m c         1     6       41       10       43      41        10        43  
+#&gt; [90m13[39m c         2     4       42        9        6      42         9         6  
+#&gt; [90m14[39m c         2     5       27       35       52      27        35        52  
+#&gt; [90m15[39m c         2     6       35       38        3      35        38         3  
+#&gt; [90m16[39m c         3     4       16        2       96      16         2        96  
+#&gt; [90m17[39m c         3     5       21        5       10      21         5        10  
+#&gt; [90m18[39m c         3     6       28       27        7      28        27         7  </div><div class='input'>
+<span class='co'>## To calculate the mean and the sum:</span>
+<span class='no'>data</span> <span class='kw'>%&gt;%</span>
+  <span class='fu'><a href='http://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span>(<span class='kw'>Var1</span> <span class='kw'>=</span> <span class='fu'><a href='http://dplyr.tidyverse.org/reference/recode.html'>recode</a></span>(<span class='no'>Var1</span>, <span class='kw'>a</span> <span class='kw'>=</span> <span class='st'>"b"</span>)) <span class='kw'>%&gt;%</span>
+  <span class='fu'>aggregate_by</span>(<span class='no'>Var1</span>, <span class='no'>Var2</span>, <span class='no'>Var3</span>, <span class='kw'>.funs</span> <span class='kw'>=</span> <span class='fu'>list</span>(<span class='fu'>sum</span>(<span class='no'>Var6</span>), <span class='fu'>mean</span>(<span class='no'>Var4</span>)))</div><div class='output co'>#&gt; [90m# A tibble: 18 x 5[39m
+#&gt; [90m# Groups:   Var1, Var2 [?][39m
+#&gt;    Var1   Var2  Var3 `sum(Var6)` `mean(Var4)`
+#&gt;    [3m[90m&lt;fct&gt;[39m[23m [3m[90m&lt;int&gt;[39m[23m [3m[90m&lt;int&gt;[39m[23m       [3m[90m&lt;int&gt;[39m[23m        [3m[90m&lt;dbl&gt;[39m[23m
+#&gt; [90m 1[39m b         1     4         142         38.5
+#&gt; [90m 2[39m b         1     5         106         59.5
+#&gt; [90m 3[39m b         1     6         107          7  
+#&gt; [90m 4[39m b         2     4         117         38.5
+#&gt; [90m 5[39m b         2     5          98         39  
+#&gt; [90m 6[39m b         2     6         171         56.5
+#&gt; [90m 7[39m b         3     4          82         27  
+#&gt; [90m 8[39m b         3     5         123         69.5
+#&gt; [90m 9[39m b         3     6          58         24.5
+#&gt; [90m10[39m c         1     4          62         49  
+#&gt; [90m11[39m c         1     5          17          5  
+#&gt; [90m12[39m c         1     6          43         41  
+#&gt; [90m13[39m c         2     4           6         42  
+#&gt; [90m14[39m c         2     5          52         27  
+#&gt; [90m15[39m c         2     6           3         35  
+#&gt; [90m16[39m c         3     4          96         16  
+#&gt; [90m17[39m c         3     5          10         21  
+#&gt; [90m18[39m c         3     6           7         28  </div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

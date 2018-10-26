@@ -47,23 +47,23 @@ data$Var6 <- sample(1:100, nrow(data), TRUE)
 ## summing the values of variables Var4, Var5, Var6 (i.e. all the variables
 ## that are not in the arguments of the function call):
 data \%>\%
- dplyr::mutate(Var1 = recode(Var1, a = "b")) \%>\%
- aggregate_by(Var1, Var2, Var3)
+  mutate(Var1 = recode(Var1, a = "b")) \%>\%
+  aggregate_by(Var1, Var2, Var3)
 
 ## To calculate the mean value:
 data \%>\%
- mutate(Var1 = recode(Var1, a = "b")) \%>\%
- aggregate_by(Var1, Var2, Var3, .funs = mean)
+  mutate(Var1 = recode(Var1, a = "b")) \%>\%
+  aggregate_by(Var1, Var2, Var3, .funs = mean)
+
+## or to apply it to all the columns:
+data \%>\%
+  mutate(Var1 = recode(Var1, a = "b")) \%>\%
+  aggregate_by(Var1, Var2, Var3, .funs = list(sum, mean))
 
 ## To calculate the mean and the sum:
- data \%>\%
- mutate(Var1 = recode(Var1, a = "b")) \%>\%
- aggregate_by(Var1, Var2, Var3, .funs = list(sum(Var6), mean(Var4)))
-
- ## or to apply it to all the columns:
- data \%>\%
- mutate(Var1 = recode(Var1, a = "b")) \%>\%
- aggregate_by(Var1, Var2, Var3, .funs = list(sum, mean))
+data \%>\%
+  mutate(Var1 = recode(Var1, a = "b")) \%>\%
+  aggregate_by(Var1, Var2, Var3, .funs = list(sum(Var6), mean(Var4)))
 
 }
 \author{

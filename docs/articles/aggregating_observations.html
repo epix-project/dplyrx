@@ -89,34 +89,7 @@
     
     
 <p>A common task when working on spatio-temporal data frames is aggregating the observations of some variables, either in space, or in time. This can be done easilty with the <code>aggregate_by</code> function of the <code>dplyrx</code> package. Let’s load it:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(dplyrx)
-<span class="co">#&gt; Le chargement a nécessité le package : dplyr</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Attachement du package : 'dplyr'</span>
-<span class="co">#&gt; The following objects are masked from 'package:stats':</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;     filter, lag</span>
-<span class="co">#&gt; The following objects are masked from 'package:base':</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;     intersect, setdiff, setequal, union</span>
-<span class="co">#&gt; Le chargement a nécessité le package : magrittr</span>
-<span class="co">#&gt; Le chargement a nécessité le package : purrr</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Attachement du package : 'purrr'</span>
-<span class="co">#&gt; The following object is masked from 'package:magrittr':</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;     set_names</span>
-<span class="co">#&gt; Le chargement a nécessité le package : rlang</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Attachement du package : 'rlang'</span>
-<span class="co">#&gt; The following objects are masked from 'package:purrr':</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;     %@%, %||%, as_function, flatten, flatten_chr, flatten_dbl,</span>
-<span class="co">#&gt;     flatten_int, flatten_lgl, invoke, list_along, modify, prepend,</span>
-<span class="co">#&gt;     rep_along, splice</span>
-<span class="co">#&gt; The following object is masked from 'package:magrittr':</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;     set_names</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(dplyrx)</code></pre></div>
 <p>To understand it better what the function can help do let’s have a look at the following meteorological data from the <code>dplyrx</code> package:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(meteo)
 meteo
@@ -221,6 +194,109 @@ meteo <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="co">#&gt; 10 Da Lat  Septem…  2013             18.3             18.8            390.</span>
 <span class="co">#&gt; # ... with 14 more rows, and 1 more variable: `sum(sunshine)` &lt;dbl&gt;</span></code></pre></div>
 </div>
+<div id="programming-with-aggregate_by" class="section level2">
+<h2 class="hasAnchor">
+<a href="#programming-with-aggregate_by" class="anchor"></a>Programming with aggregate_by</h2>
+<p>The function <code>aggregate_by</code> has been written to make it possible to program with. The following first examples here are reduced to very simple components to make them easier to understand.</p>
+<p>Writing a function with <code>aggregate_by</code> is possible as the arguments can be specify with or without quotation. For these examples, we will just use the temperature and rainfall columns of the meteo data set, to have a simplier visualisation</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">meteo2 &lt;-<span class="st"> </span>meteo <span class="op">%&gt;%</span><span class="st"> </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/select.html">select</a></span>(year, month, station, temperature, rainfall)</code></pre></div>
+<p>Let’s start with a simple case: we want to aggregate the station <code>Can Tho</code> and <code>Da Lat</code> by month and year.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">meteo2 <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">station =</span> <span class="kw"><a href="http://dplyr.tidyverse.org/reference/recode.html">recode</a></span>(station, <span class="st">`</span><span class="dt">Can Tho</span><span class="st">`</span> =<span class="st"> "group_prov"</span>, <span class="st">`</span><span class="dt">Da Lat</span><span class="st">`</span>=<span class="st"> "group_prov"</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw"><a href="../reference/aggregate_by.html">aggregate_by</a></span>(station, month, year)
+<span class="co">#&gt; # A tibble: 27 x 5</span>
+<span class="co">#&gt; # Groups:   station, month [?]</span>
+<span class="co">#&gt;    station    month      year temperature rainfall</span>
+<span class="co">#&gt;    &lt;fct&gt;      &lt;ord&gt;     &lt;int&gt;       &lt;dbl&gt;    &lt;dbl&gt;</span>
+<span class="co">#&gt;  1 group_prov January    2013        42.2    20.1 </span>
+<span class="co">#&gt;  2 group_prov January    2014        39.5     7.30</span>
+<span class="co">#&gt;  3 group_prov January    2015        40.7     0.1 </span>
+<span class="co">#&gt;  4 group_prov May        2013        49.0   438.  </span>
+<span class="co">#&gt;  5 group_prov May        2014        49.2   523.  </span>
+<span class="co">#&gt;  6 group_prov May        2015        49.6   450.  </span>
+<span class="co">#&gt;  7 group_prov September  2013        45.4   726.  </span>
+<span class="co">#&gt;  8 group_prov September  2014        46.1   640.  </span>
+<span class="co">#&gt;  9 group_prov September  2015        46.9   542.  </span>
+<span class="co">#&gt; 10 Da Nang    January    2013        21.9    17.8 </span>
+<span class="co">#&gt; # ... with 17 more rows</span></code></pre></div>
+<p>In a function:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">my_aggregate_by &lt;-<span class="st"> </span><span class="cf">function</span>(df, group_var) {
+  <span class="kw"><a href="../reference/aggregate_by.html">aggregate_by</a></span>(df, station, group_var)
+}
+
+group_var &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">"year"</span>, <span class="st">"month"</span>)
+meteo2 <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">station =</span> <span class="kw"><a href="http://dplyr.tidyverse.org/reference/recode.html">recode</a></span>(station, <span class="st">`</span><span class="dt">Can Tho</span><span class="st">`</span> =<span class="st"> "group_prov"</span>, <span class="st">`</span><span class="dt">Da Lat</span><span class="st">`</span>=<span class="st"> "group_prov"</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">my_aggregate_by</span>(group_var)
+<span class="co">#&gt; # A tibble: 27 x 5</span>
+<span class="co">#&gt; # Groups:   station, year [?]</span>
+<span class="co">#&gt;    station     year month     temperature rainfall</span>
+<span class="co">#&gt;    &lt;fct&gt;      &lt;int&gt; &lt;ord&gt;           &lt;dbl&gt;    &lt;dbl&gt;</span>
+<span class="co">#&gt;  1 group_prov  2013 January          42.2    20.1 </span>
+<span class="co">#&gt;  2 group_prov  2013 May              49.0   438.  </span>
+<span class="co">#&gt;  3 group_prov  2013 September        45.4   726.  </span>
+<span class="co">#&gt;  4 group_prov  2014 January          39.5     7.30</span>
+<span class="co">#&gt;  5 group_prov  2014 May              49.2   523.  </span>
+<span class="co">#&gt;  6 group_prov  2014 September        46.1   640.  </span>
+<span class="co">#&gt;  7 group_prov  2015 January          40.7     0.1 </span>
+<span class="co">#&gt;  8 group_prov  2015 May              49.6   450.  </span>
+<span class="co">#&gt;  9 group_prov  2015 September        46.9   542.  </span>
+<span class="co">#&gt; 10 Da Nang     2013 January          21.9    17.8 </span>
+<span class="co">#&gt; # ... with 17 more rows</span></code></pre></div>
+<p>It’s the same principle with the parameter <code>col_name</code> (here: <code>station</code>). We can complexify a little bit our function:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">my_aggregate_by &lt;-<span class="st"> </span><span class="cf">function</span>(df, col_name, group_var) {
+  <span class="kw"><a href="../reference/aggregate_by.html">aggregate_by</a></span>(df, col_name, group_var)
+}
+
+sel &lt;-<span class="st"> "station"</span>
+sel_var &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">"year"</span>, <span class="st">"month"</span>)
+
+meteo2 <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">station =</span> <span class="kw"><a href="http://dplyr.tidyverse.org/reference/recode.html">recode</a></span>(station, <span class="st">`</span><span class="dt">Can Tho</span><span class="st">`</span> =<span class="st"> "group_prov"</span>, <span class="st">`</span><span class="dt">Da Lat</span><span class="st">`</span>=<span class="st"> "group_prov"</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">my_aggregate_by</span>(sel, sel_var)
+<span class="co">#&gt; # A tibble: 27 x 5</span>
+<span class="co">#&gt; # Groups:   station, year [?]</span>
+<span class="co">#&gt;    station     year month     temperature rainfall</span>
+<span class="co">#&gt;    &lt;fct&gt;      &lt;int&gt; &lt;ord&gt;           &lt;dbl&gt;    &lt;dbl&gt;</span>
+<span class="co">#&gt;  1 group_prov  2013 January          42.2    20.1 </span>
+<span class="co">#&gt;  2 group_prov  2013 May              49.0   438.  </span>
+<span class="co">#&gt;  3 group_prov  2013 September        45.4   726.  </span>
+<span class="co">#&gt;  4 group_prov  2014 January          39.5     7.30</span>
+<span class="co">#&gt;  5 group_prov  2014 May              49.2   523.  </span>
+<span class="co">#&gt;  6 group_prov  2014 September        46.1   640.  </span>
+<span class="co">#&gt;  7 group_prov  2015 January          40.7     0.1 </span>
+<span class="co">#&gt;  8 group_prov  2015 May              49.6   450.  </span>
+<span class="co">#&gt;  9 group_prov  2015 September        46.9   542.  </span>
+<span class="co">#&gt; 10 Da Nang     2013 January          21.9    17.8 </span>
+<span class="co">#&gt; # ... with 17 more rows</span></code></pre></div>
+<p>The next challenge is to also integrate the <code>.funs</code> parameters in our function to be able to filter the values used for aggregation.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">my_aggregate_by &lt;-<span class="st"> </span><span class="cf">function</span>(df, col_name, group_var, functs) {
+  <span class="kw"><a href="../reference/aggregate_by.html">aggregate_by</a></span>(df, col_name, group_var, <span class="dt">.funs =</span> functs)
+}</code></pre></div>
+<p>The <code>.funs</code> parameter should be provide as a list of vector character when used in programming to avoid problem of evaluation.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sel &lt;-<span class="st"> "station"</span>
+sel_var &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">"year"</span>, <span class="st">"month"</span>)
+lst_fun &lt;-<span class="st">  </span><span class="kw">list</span>(<span class="st">"mean(temperature)"</span>, <span class="st">"sum(rainfall)"</span>)
+
+meteo2 <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">station =</span> <span class="kw"><a href="http://dplyr.tidyverse.org/reference/recode.html">recode</a></span>(station, <span class="st">`</span><span class="dt">Can Tho</span><span class="st">`</span> =<span class="st"> "group_prov"</span>, <span class="st">`</span><span class="dt">Da Lat</span><span class="st">`</span>=<span class="st"> "group_prov"</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">my_aggregate_by</span>(sel, sel_var, <span class="dt">functs =</span> lst_fun)
+<span class="co">#&gt; # A tibble: 27 x 5</span>
+<span class="co">#&gt; # Groups:   station, year [?]</span>
+<span class="co">#&gt;    station     year month     `mean(temperature)` `sum(rainfall)`</span>
+<span class="co">#&gt;    &lt;fct&gt;      &lt;int&gt; &lt;ord&gt;                   &lt;dbl&gt;           &lt;dbl&gt;</span>
+<span class="co">#&gt;  1 group_prov  2013 January                  21.1           20.1 </span>
+<span class="co">#&gt;  2 group_prov  2013 May                      24.5          438.  </span>
+<span class="co">#&gt;  3 group_prov  2013 September                22.7          726.  </span>
+<span class="co">#&gt;  4 group_prov  2014 January                  19.8            7.30</span>
+<span class="co">#&gt;  5 group_prov  2014 May                      24.6          523.  </span>
+<span class="co">#&gt;  6 group_prov  2014 September                23.0          640.  </span>
+<span class="co">#&gt;  7 group_prov  2015 January                  20.4            0.1 </span>
+<span class="co">#&gt;  8 group_prov  2015 May                      24.8          450.  </span>
+<span class="co">#&gt;  9 group_prov  2015 September                23.4          542.  </span>
+<span class="co">#&gt; 10 Da Nang     2013 January                  21.9           17.8 </span>
+<span class="co">#&gt; # ... with 17 more rows</span></code></pre></div>
+</div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
@@ -229,6 +305,7 @@ meteo <span class="op">%&gt;%</span><span class="st"> </span>
 <a href="#tocnav" class="anchor"></a>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
 <li><a href="#a-more-complex-situation">A more complex situation</a></li>
+      <li><a href="#programming-with-aggregate_by">Programming with aggregate_by</a></li>
       </ul>
 </div>
       </div>

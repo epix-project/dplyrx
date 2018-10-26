@@ -20,7 +20,7 @@ A common task when working on spatio-temporal data frames is aggregating the
 observations of some variables, either in space, or in time. This can be done
 easilty with the `aggregate_by` function of the `dplyrx` package. Let's load it:
 
-```{r}
+```{r message = FALSE}
 library(dplyrx)
 ```
 
