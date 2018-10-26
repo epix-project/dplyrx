@@ -13,7 +13,8 @@
 #' @param col_name the variable on which to perform the aggregation
 #' @param ... other  variables on which to perform the aggregation
 #' @param .funs the function used to perform the aggregation.
-#' By default \code{sum}.
+#' By default \code{sum}. Inputed as a function name, string vector or a list of
+#' names.
 #'
 #' @return A data frame with the same variables as `df` but for which some of
 #' the observation have been aggregated (i.e. less rows than in `df`).
@@ -35,14 +36,30 @@
 #' ## summing the values of variables Var4, Var5, Var6 (i.e. all the variables
 #' ## that are not in the arguments of the function call):
 #' data %>%
-#'  mutate(Var1 = recode(Var1, a = "b")) %>%
-#'  aggregate_by(data, Var1, Var2, Var3)
+#'   mutate(Var1 = recode(Var1, a = "b")) %>%
+#'   aggregate_by(Var1, Var2, Var3)
+#'
+#' ## To calculate the mean value:
+#' data %>%
+#'   mutate(Var1 = recode(Var1, a = "b")) %>%
+#'   aggregate_by(Var1, Var2, Var3, .funs = mean)
+#'
+#' ## or to apply it to all the columns:
+#' data %>%
+#'   mutate(Var1 = recode(Var1, a = "b")) %>%
+#'   aggregate_by(Var1, Var2, Var3, .funs = list(sum, mean))
+#'
+#' ## To calculate the mean and the sum:
+#' data %>%
+#'   mutate(Var1 = recode(Var1, a = "b")) %>%
+#'   aggregate_by(Var1, Var2, Var3, .funs = list(sum(Var6), mean(Var4)))
 #'
 #' @importFrom magrittr %>% %<>%
 #' @importFrom dplyr filter anti_join mutate_if bind_rows select group_by
 #' summarise_all mutate enquo summarise left_join
 #' @importFrom purrr reduce
 #' @importFrom rlang parse_expr
+#' @importFrom stringr str_detect
 #'
 #' @export
 aggregate_by <- function(df, col_name, ..., .funs = sum) {
@@ -55,51 +72,61 @@ aggregate_by <- function(df, col_name, ..., .funs = sum) {
   res <- try(eval(...), silent = TRUE)
   if (inherits(res, "try-error")) {
     col_sel <-  as.character(substitute(list(...))) %>%
-      grep("list", ., invert = T, value = T)
+      grep("list", ., invert = TRUE, value = TRUE)
   } else {
     res1 <- try(eval(substitute(...)), silent = TRUE)
-    if(inherits(res1, "try-error")) {
-      col_sel <- list(...) %>% unlist
+    if (inherits(res1, "try-error")) {
+      col_sel <- list(...) %>% unlist()
+    } else {
+      col_sel <- eval(substitute(list(...))) %>% unlist() %>% as.vector()
     }
   }
 
   group_var <-  c(col_name, col_sel)
 
-  funs <- as.character(substitute(.funs)) %>%
-    grep("list", ., invert = T, value = T) %>%
-    unlist
+  funcs <- as.character(substitute(.funs)) %>%
+    grep("list", ., invert = TRUE, value = TRUE) %>%
+    unlist()
 
-  if (funs %>% is.element(names(df)) %>% any()) {
+  test <- funcs %>% as.character() %>% unlist() %>%
+    strsplit("\\, |\\(|\\)") %>% unlist()
+  sel <- test %>% stringr::str_detect(paste(names(df), collapse = "|"))
+  func_res <- try(lapply(test[!sel], function(x) match.fun(x)), silent = TRUE)
+
+  if (inherits(func_res, "try-error")) {
+    funcs <- unlist(.funs)
+  }
+
+  if (funcs %>% is.element(names(df)) %>% any()) {
 
     x <- enquo(.funs)
     df %<>% group_by(.dots = group_var) %>%
       summarise(!!! x)
 
-  } else if (grepl(paste(names(df), collapse = "|"), funs) %>% any == FALSE) {
+  } else if (grepl(paste(names(df), collapse = "|"), funcs) %>% any == FALSE) {
 
     df %<>% group_by(.dots = group_var) %>%
-      summarise_all(funs)
+      summarise_all(funcs)
 
-  } else{
+  } else {
 
-    df <- lapply(funs, function(x) {
+    df <- lapply(funcs, function(x) {
 
       if(grepl("\\,", x)){
 
         x <- as.character(x)
-        sel <- strsplit(x, ", |,") %>%  unlist %>% strsplit("\\(") %>% unlist
+        sel <- strsplit(x, ", |,") %>%  unlist() %>% strsplit("\\(") %>% unlist()
         msel <- sel[1]
         x <- paste0(sel, ")", sep = "") %>% gsub("))", ")", .) %>%
-          paste(msel, ., sep = "(") %>% .[-1] %>% unlist
+          paste(msel, ., sep = "(") %>% .[-1] %>% unlist()
 
-        df <- lapply(x, function(z){
+        df <- lapply(x, function(z) {
 
           z <- rlang::parse_expr(z)
           df %<>% group_by(.dots = group_var) %>%
             summarise(!! z)
         }) %>%
           reduce(left_join, by = group_var)
-
 
         } else {
 

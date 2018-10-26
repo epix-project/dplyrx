@@ -32,6 +32,11 @@ You can install dplyrx from github with:
 devtools::install_github("epix-project/dplyrx")
 ```
 
+To load the package:
+```{r message = FALSE}
+library(dplyrx)
+```
+
 ## Example
 
 Below is a basic example which shows you how to solve a common problem.
@@ -49,8 +54,8 @@ values for given points in space and time. If you want to aggregate the values
 "a" and "b" of the categorical the variable `Var1`, summing the values of
 variables X4, X5 and X6, it can be done like this:
 
-```{r eval = FALSE}
+```{r}
 data %>%
   mutate(Var1 = recode(Var1, a = "b")) %>%
-  aggregate_by(data, Var1, Var2, Var3)
+  aggregate_by(Var1, Var2, Var3)
 ```
