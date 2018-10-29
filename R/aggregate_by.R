@@ -63,7 +63,7 @@
 #'
 #' @importFrom magrittr %>% %<>%
 #' @importFrom dplyr filter anti_join mutate_if bind_rows select group_by
-#' summarise_all mutate enquo summarise left_join
+#' summarise_all mutate enquo summarise left_join ungroup
 #' @importFrom purrr reduce
 #' @importFrom rlang parse_expr
 #' @importFrom stringr str_detect
@@ -144,5 +144,5 @@ aggregate_by <- function(df, col_name, ..., .funs = sum) {
     }) %>%
       reduce(left_join, by = group_var)
   }
-  df
+  df %>% ungroup
 }
