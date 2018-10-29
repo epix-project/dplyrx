@@ -122,7 +122,7 @@ meteo2 %>%
   my_aggregate_by(group_var)
 ```
 
-It's the same principle with the parameter `col_name` (here: `station`). We can 
+It's the same principle with the argument `col_name` (here: `station`). We can 
 complexify a little bit our function:
  
 ```{r}
@@ -138,7 +138,7 @@ meteo2 %>%
   my_aggregate_by(sel, sel_var)
 ```
 
-The next challenge is to also integrate the `.funs` parameters in our function to
+The next challenge is to also integrate the `.funs` arguments in our function to
 be able to filter the values used for aggregation.
 
 ```{r}
@@ -147,7 +147,7 @@ my_aggregate_by <- function(df, col_name, group_var, functs) {
 }
 ```
 
-The `.funs` parameter should be provide as a list of vector character when used 
+The `.funs` argument should be provide as a list of vector character when used 
 in programming to avoid problem of evaluation.
 
 ```{r}
