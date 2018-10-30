@@ -5,19 +5,26 @@
 #' function for the aggregation.
 #'
 #' On a data frame that contains the values of the categorical variable to
-#' aggregate (`col_name`, `...`), the function performs a
+#' aggregate (\code{col_name}, \code{...}), the function performs a
 #' \code{\link[dplyr]{group_by}} followed by a \code{\link[dplyr]{summarise}}
-#' with the function(s) \code{.funs}.
+#' with the function(s) \code{.funs}.\cr
+#' The \code{.funs} arguments can be inputed with or without quotation as one
+#' function, for example: \code{.funs = sum} or \code{.funs = "sum"} or a list
+#' of multiple function, for example: \code{.funs = list(sum, mean)} or
+#' \code{.funs = list("sum", "mean")}. See
+#' \code{vignette("aggregating_observations")} for usage. In case of multiple
+#' functions or function for a specific column (example: \code{sum(COLNAME)})
+#' inputed, the function will be the name of the variable in the result.
 #'
 #' @param df the data frame on which to perform the aggregation.
 #' @param col_name the variable on which to perform the aggregation
 #' @param ... other  variables on which to perform the aggregation
-#' @param .funs the function used to perform the aggregation.
-#' By default \code{sum}. Inputed as a function name, string vector or a list of
-#' names.
+#' @param .funs the name of a function given as a name, literal character
+#' string or a list of names or character strings. See \code{Details} for
+#' more information on the specific usage. By default \code{sum}.
 #'
-#' @return A data frame with the same variables as `df` but for which some of
-#' the observation have been aggregated (i.e. less rows than in `df`).
+#' @return A data frame with the same variables as \code{df} but for which some
+#' of the observation have been aggregated (i.e. less rows than in \code{df}).
 #'
 #' @author Marc Choisy and Lucie Contamin.
 #'
@@ -56,7 +63,7 @@
 #'
 #' @importFrom magrittr %>% %<>%
 #' @importFrom dplyr filter anti_join mutate_if bind_rows select group_by
-#' summarise_all mutate enquo summarise left_join
+#' summarise_all mutate enquo summarise left_join ungroup
 #' @importFrom purrr reduce
 #' @importFrom rlang parse_expr
 #' @importFrom stringr str_detect
@@ -137,5 +144,5 @@ aggregate_by <- function(df, col_name, ..., .funs = sum) {
     }) %>%
       reduce(left_join, by = group_var)
   }
-  df
+  df %>% ungroup
 }

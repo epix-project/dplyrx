@@ -8,3 +8,4 @@
 ^ignored/.*$
 ^codecov\.yml$
 ^appveyor\.yml$
+Icon
