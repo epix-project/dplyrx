@@ -12,3 +12,4 @@ test_that("`mutate2` returns the correct output", {
   expect_s3_class(mtcars %>% mutate2(gear = gear), class(mtcars))
 
 })
+
