@@ -13,13 +13,13 @@ aggregate_by(df, col_name, ..., .funs = sum)
 
 \item{...}{other  variables on which to perform the aggregation}
 
-\item{.funs}{the function used to perform the aggregation.
-By default \code{sum}. Inputed as a function name, string vector or a list of
-names.}
+\item{.funs}{the name of a function given as a name, literal character
+string or a list of names or character strings. See \code{Details} for
+more information on the specific usage. By default \code{sum}.}
 }
 \value{
-A data frame with the same variables as `df` but for which some of
-the observation have been aggregated (i.e. less rows than in `df`).
+A data frame with the same variables as \code{df} but for which some
+of the observation have been aggregated (i.e. less rows than in \code{df}).
 }
 \description{
 \code{aggregate_by} aggregates some variables of a data frame according to
@@ -28,9 +28,16 @@ function for the aggregation.
 }
 \details{
 On a data frame that contains the values of the categorical variable to
-aggregate (`col_name`, `...`), the function performs a
+aggregate (\code{col_name}, \code{...}), the function performs a
 \code{\link[dplyr]{group_by}} followed by a \code{\link[dplyr]{summarise}}
-with the function(s) \code{.funs}.
+with the function(s) \code{.funs}.\cr
+The \code{.funs} arguments can be inputed with or without quotation as one
+function, for example: \code{.funs = sum} or \code{.funs = "sum"} or a list
+of multiple function, for example: \code{.funs = list(sum, mean)} or
+\code{.funs = list("sum", "mean")}. See
+\code{vignette("aggregating_observations")} for usage. In case of multiple
+functions or function for a specific column (example: \code{sum(COLNAME)})
+inputed, the function will be the name of the variable in the result.
 }
 \examples{
 
