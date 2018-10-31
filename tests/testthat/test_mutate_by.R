@@ -5,6 +5,7 @@ context("`mutate_by`")
 
 test_that("`mutate_by` returns the correct output", {
 
+  # test examples
   set.seed(30101976)
   data <- expand.grid(letters[1:3], 1:3, 4:6)
   data$Var4 <- sample(1:100, nrow(data), TRUE)
@@ -37,6 +38,7 @@ test_that("`mutate_by` returns the correct output", {
                          data %>% mutate_by(Var4 > 75, mean) %>%
                            arrange(Var1, Var2, Var3))
 
+  # test arguments `...`
   df <- dplyr::starwars %>% select(name, height, mass)
   dfexp <- df
   dfexp[which(dfexp$height > 220), "height"] <- mean(dfexp$height, na.rm = TRUE)
@@ -46,6 +48,7 @@ test_that("`mutate_by` returns the correct output", {
                            arrange(name, height, mass),
                          dfexp %>% arrange(name, height, mass))
 
+  # test all arguments
   dfexp2 <- dplyr::starwars %>% select(name, height, mass, species)
   dfexp2[which(dfexp2$height > 230), ] %<>%
     anti_join(dfexp2, .) %>%
