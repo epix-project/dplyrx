@@ -21,7 +21,7 @@ test_that("`aggregate_by` returns the correct output with columns name
     group_by(Var1, Var2, Var3) %>% summarise(mean(Var4))
   mean5 <- data %>% mutate(Var1 = recode(Var1, a = "b")) %>%
     group_by(Var1, Var2, Var3) %>% summarise(mean(Var5))
-  expect <- list(mean4,mean5, sum6) %>% purrr::reduce(left_join)
+  expect <- list(mean4, mean5, sum6) %>% purrr::reduce(left_join)
 
   # Test with one function
   test1 <- data %>%
@@ -42,7 +42,7 @@ test_that("`aggregate_by` returns the correct output with columns name
     mutate(Var1 = recode(Var1, a = "b")) %>%
     aggregate_by(Var1, Var2, Var3, .funs = list(mean(Var4, Var5), sum(Var6)))
 
-  testthat::expect_equal(expect,test3)
+  testthat::expect_equal(expect, test3)
 
 })
 
@@ -185,7 +185,7 @@ test_that("`aggregate_by` behaviours during programming", {
     group_by(Var1, Var2, Var3) %>% summarise(mean(Var4))
   mean5 <- data %>% mutate(Var1 = recode(Var1, a = "b")) %>%
     group_by(Var1, Var2, Var3) %>% summarise(mean(Var5))
-  expect <- list(mean4,mean5, sum6) %>% purrr::reduce(left_join)
+  expect <- list(mean4, mean5, sum6) %>% purrr::reduce(left_join)
 
   # Test2 inside a function
   do_aggregate2 <- function(df, col_name, group_var, functs){

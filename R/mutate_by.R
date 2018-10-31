@@ -60,9 +60,7 @@ mutate_by <- function(df, .filter, .funs, ..., colgroups = NULL){
   flter <- rlang::as_quosure(flter, env = NULL)
   col_var <- stringr::str_extract(flter,
                                   paste(colnames(df), collapse = "|")) %>%
-    na.omit %>% unique
-
-  col_sel <- colgroups
+    na.omit() %>% unique()
 
   add_arg <- substitute(list(...)) %>%
     grep("list", ., invert = TRUE, value = TRUE)
@@ -70,11 +68,11 @@ mutate_by <- function(df, .filter, .funs, ..., colgroups = NULL){
                                                           " = ", add_arg[x]))
 
   dff <- filter(df, !! flter)
-  dft <- dff %>% anti_join(df, . , by = names(df))
+  dft <- dff %>% anti_join(df, ., by = names(df))
 
-  if (col_sel %>% length == 0) {
+  if (colgroups %>% length == 0) {
 
-    if(length(lst_arg) > 0) {
+    if (length(lst_arg) > 0) {
       x <- paste0(as.character(substitute(.funs)), "(", lst_arg, ")")
     } else {
       x <-  as.character(substitute(.funs))
@@ -87,7 +85,7 @@ mutate_by <- function(df, .filter, .funs, ..., colgroups = NULL){
 
   } else {
 
-    if(length(lst_arg) > 0) {
+    if (length(lst_arg) > 0) {
       x <- paste0(as.character(substitute(.funs)), "(", col_var, ", ", lst_arg,
                   ")")
     } else {
@@ -96,10 +94,10 @@ mutate_by <- function(df, .filter, .funs, ..., colgroups = NULL){
     x <- rlang::parse_expr(x)
 
     res <- dft %>%
-      group_by(.dots = col_sel) %>%
+      group_by(.dots = colgroups) %>%
       summarise(!!col_var := !! x) %>%
-      ungroup %>%
-      left_join(dff, ., by = col_sel) %>%
+      ungroup() %>%
+      left_join(dff, ., by = colgroups) %>%
       rename(!!col_var := paste0(col_var, ".y")) %>%
       select(-matches(paste0(col_var, ".x"))) %>%
       select(names(df)) %>%
