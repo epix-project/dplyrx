@@ -55,7 +55,7 @@ test_that("`mutate_by` returns the correct output", {
     group_by(species) %>%
     summarise(height = mean(height, na.rm = TRUE)) %>%
     ungroup %>%
-    left_join(dfexp2[which(dfexp2$height > 220), ], . , by = c("species")) %>%
+    left_join(dfexp2[which(dfexp2$height > 220), ], ., by = c("species")) %>%
     rename(height = height.y) %>%
     select(-height.x) %>%
     select(names(dfexp2))
