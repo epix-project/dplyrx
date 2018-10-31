@@ -13,8 +13,9 @@
 #' mutate_by.
 #' @param .funs function called to calculate the value to applied to the filter
 #' value. Inputed as a function name.
-#' @param ... other variables to apply \code{group_by} used to calculate the new
-#' value.
+#' @param ... additional arguments passed on to function.
+#' @param colgroups other variables to apply \code{group_by} used to calculate
+#' the new value.
 #'
 #' @return A data frame with the same variables as `df`.
 #'
@@ -37,7 +38,13 @@
 #'
 #' # To mutate the value > 75 in the variable `Var4` by the mean of the value of
 #' # `Var4` group by `Var1` and `Var2`, except the one > 75.
-#' data %>% mutate_by(Var4 > 75, mean, Var1, Var2)
+#' data %>% mutate_by(Var4 > 75, mean, colgroups = c("Var1", "Var2"))
+#'
+#' # To mutate the value > 75 in the variable `Var4` by the mean of the value of
+#' # `Var4` group by `Var1` and `Var2`, except the one > 75 and by removing NA
+#' # value.
+#' data %>% mutate_by(Var4 > 75, mean, colgroups = c("Var1", "Var2"),
+#'   na.rm = TRUE)
 #'
 #' @importFrom magrittr %>% %<>%
 #' @importFrom dplyr filter anti_join mutate bind_rows select group_by
@@ -47,26 +54,47 @@
 #' @importFrom stats na.omit
 #'
 #' @export
-mutate_by <- function(df, .filter, .funs, ...){
-
-  col_sel <-  as.character(substitute(list(...))) %>%
-    grep("list", ., invert = TRUE, value = TRUE)
+mutate_by <- function(df, .filter, .funs, ..., colgroups = NULL){
 
   flter <- substitute(.filter)
-  flter <- rlang::as_quosure(flter)
-  col_var <- stringr::str_extract(flter, colnames(df)) %>%
+  flter <- rlang::as_quosure(flter, env = NULL)
+  col_var <- stringr::str_extract(flter,
+                                  paste(colnames(df), collapse = "|")) %>%
     na.omit %>% unique
 
-  x <- paste0(as.character(substitute(.funs)), "(", col_var, ")")
-  x <- rlang::parse_expr(x)
+  col_sel <- colgroups
+
+  add_arg <- substitute(list(...)) %>%
+    grep("list", ., invert = TRUE, value = TRUE)
+  lst_arg <- lapply(seq_along(add_arg), function(x) paste0(names(add_arg)[x],
+                                                          " = ", add_arg[x]))
 
   dff <- filter(df, !! flter)
   dft <- dff %>% anti_join(df, . , by = names(df))
+
   if (col_sel %>% length == 0) {
+
+    if(length(lst_arg) > 0) {
+      x <- paste0(as.character(substitute(.funs)), "(", lst_arg, ")")
+    } else {
+      x <-  as.character(substitute(.funs))
+    }
+     x <- rlang::parse_expr(x)
+
     res <- dff %>%
-      mutate(!!col_var := df %>% select(!!col_var) %>% unlist %>% .funs) %>%
+      mutate(!!col_var := df %>% select(!!col_var) %>% unlist %>% !! x) %>%
       bind_rows(dft)
+
   } else {
+
+    if(length(lst_arg) > 0) {
+      x <- paste0(as.character(substitute(.funs)), "(", col_var, ", ", lst_arg,
+                  ")")
+    } else {
+      x <- paste0(as.character(substitute(.funs)), "(", col_var, ")")
+    }
+    x <- rlang::parse_expr(x)
+
     res <- dft %>%
       group_by(.dots = col_sel) %>%
       summarise(!!col_var := !! x) %>%
@@ -77,5 +105,5 @@ mutate_by <- function(df, .filter, .funs, ...){
       select(names(df)) %>%
       bind_rows(dft)
   }
-  res
+ res
 }
