@@ -17,8 +17,8 @@
 #' inputed, the function will be the name of the variable in the result.
 #'
 #' @param df the data frame on which to perform the aggregation.
-#' @param col_name the variable on which to perform the aggregation
-#' @param ... other  variables on which to perform the aggregation
+#' @param col_name the variable on which to perform the aggregation.
+#' @param ... others variables passed on to `group_by`.
 #' @param .funs the name of a function given as a name, literal character
 #' string or a list of names or character strings. See \code{Details} for
 #' more information on the specific usage. By default \code{sum}.

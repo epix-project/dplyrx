@@ -9,9 +9,9 @@ aggregate_by(df, col_name, ..., .funs = sum)
 \arguments{
 \item{df}{the data frame on which to perform the aggregation.}
 
-\item{col_name}{the variable on which to perform the aggregation}
+\item{col_name}{the variable on which to perform the aggregation.}
 
-\item{...}{other  variables on which to perform the aggregation}
+\item{...}{others variables passed on to `group_by`.}
 
 \item{.funs}{the name of a function given as a name, literal character
 string or a list of names or character strings. See \code{Details} for
