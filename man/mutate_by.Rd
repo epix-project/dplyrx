@@ -4,7 +4,7 @@
 \alias{mutate_by}
 \title{Mutate one column value by summarize value}
 \usage{
-mutate_by(df, .filter, .funs, ...)
+mutate_by(df, .filter, .funs, ..., colgroups = NULL)
 }
 \arguments{
 \item{df}{the data frame on which to perform the mutate_by.}
@@ -15,8 +15,10 @@ mutate_by.}
 \item{.funs}{function called to calculate the value to applied to the filter
 value. Inputed as a function name.}
 
-\item{...}{other variables to apply \code{group_by} used to calculate the new
-value.}
+\item{...}{additional arguments passed on to function.}
+
+\item{colgroups}{other variables to apply \code{group_by} used to calculate
+the new value.}
 }
 \value{
 A data frame with the same variables as `df`.
@@ -48,7 +50,13 @@ data \%>\% mutate_by(Var4 > 75, mean)
 
 # To mutate the value > 75 in the variable `Var4` by the mean of the value of
 # `Var4` group by `Var1` and `Var2`, except the one > 75.
-data \%>\% mutate_by(Var4 > 75, mean, Var1, Var2)
+data \%>\% mutate_by(Var4 > 75, mean, colgroups = c("Var1", "Var2"))
+
+# To mutate the value > 75 in the variable `Var4` by the mean of the value of
+# `Var4` group by `Var1` and `Var2`, except the one > 75 and by removing NA
+# value.
+data \%>\% mutate_by(Var4 > 75, mean, colgroups = c("Var1", "Var2"),
+  na.rm = TRUE)
 
 }
 \author{

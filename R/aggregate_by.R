@@ -119,10 +119,10 @@ aggregate_by <- function(df, col_name, ..., .funs = sum) {
 
     df <- lapply(funcs, function(x) {
 
-      if(grepl("\\,", x)){
+      if (grepl("\\,", x)){
 
         x <- as.character(x)
-        sel <- strsplit(x, ", |,") %>%  unlist() %>% strsplit("\\(") %>% unlist()
+        sel <- strsplit(x, ", |,") %>% unlist() %>% strsplit("\\(") %>% unlist()
         msel <- sel[1]
         x <- paste0(sel, ")", sep = "") %>% gsub("))", ")", .) %>%
           paste(msel, ., sep = "(") %>% .[-1] %>% unlist()
