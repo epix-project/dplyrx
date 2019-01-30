@@ -40,7 +40,6 @@ functions or function for a specific column (example: \code{sum(COLNAME)})
 inputed, the function will be the name of the variable in the result.
 }
 \examples{
-
 library(dplyr)
 
 ## A toy data frame:
@@ -71,7 +70,6 @@ data \%>\%
 data \%>\%
   mutate(Var1 = recode(Var1, a = "b")) \%>\%
   aggregate_by(Var1, Var2, Var3, .funs = list(sum(Var6), mean(Var4)))
-
 }
 \author{
 Marc Choisy and Lucie Contamin.

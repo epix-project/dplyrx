@@ -32,7 +32,6 @@ mtcars \%>\% mutate(a_new_variable = 3) \%>\% attributes()
 
 # Whereas mutate2 does not:
 mtcars \%>\% mutate2(a_new_variable = 3) \%>\% attributes()
-
 }
 \seealso{
 \code{\link[dplyr]{mutate}}.
