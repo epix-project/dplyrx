@@ -11,7 +11,7 @@ aggregate_by(df, col_name, ..., .funs = sum)
 
 \item{col_name}{the variable on which to perform the aggregation.}
 
-\item{...}{others variables passed on to `group_by`.}
+\item{...}{others variables passed on to \code{group_by}.}
 
 \item{.funs}{the name of a function given as a name, literal character
 string or a list of names or character strings. See \code{Details} for

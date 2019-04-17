@@ -17,7 +17,7 @@
 #' @param colgroups other variables to apply \code{group_by} used to calculate
 #' the new value.
 #'
-#' @return A data frame with the same variables as `df`.
+#' @return A data frame with the same variables as \code{df}.
 #'
 #' @author Lucie Contamin.
 #'
@@ -57,7 +57,7 @@ mutate_by <- function(df, .filter, .funs, ..., colgroups = NULL){
      x <- rlang::parse_expr(x)
 
     res <- dff %>%
-      mutate(!!col_var := df %>% select(!!col_var) %>% unlist %>% !! x) %>%
+      mutate(!!col_var := df %>% select(!!col_var) %>% unlist() %>% !! x) %>%
       bind_rows(dft)
 
   } else {

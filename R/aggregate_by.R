@@ -18,7 +18,7 @@
 #'
 #' @param df the data frame on which to perform the aggregation.
 #' @param col_name the variable on which to perform the aggregation.
-#' @param ... others variables passed on to `group_by`.
+#' @param ... others variables passed on to \code{group_by}.
 #' @param .funs the name of a function given as a name, literal character
 #' string or a list of names or character strings. See \code{Details} for
 #' more information on the specific usage. By default \code{sum}.
@@ -113,5 +113,5 @@ aggregate_by <- function(df, col_name, ..., .funs = sum) {
     }) %>%
       reduce(left_join, by = group_var)
   }
-  df %>% ungroup
+  df %>% ungroup()
 }

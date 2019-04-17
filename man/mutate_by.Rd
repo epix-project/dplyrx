@@ -21,7 +21,7 @@ value. Inputed as a function name.}
 the new value.}
 }
 \value{
-A data frame with the same variables as `df`.
+A data frame with the same variables as \code{df}.
 }
 \description{
 \code{mutate_by} mutates value of a certain variable by the summarize value
