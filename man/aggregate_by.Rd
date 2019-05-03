@@ -11,7 +11,7 @@ aggregate_by(df, col_name, ..., .funs = sum)
 
 \item{col_name}{the variable on which to perform the aggregation.}
 
-\item{...}{others variables passed on to `group_by`.}
+\item{...}{others variables passed on to \code{group_by}.}
 
 \item{.funs}{the name of a function given as a name, literal character
 string or a list of names or character strings. See \code{Details} for
@@ -27,10 +27,7 @@ the values of a categorical variable of the same data frame and using a given
 function for the aggregation.
 }
 \details{
-On a data frame that contains the values of the categorical variable to
-aggregate (\code{col_name}, \code{...}), the function performs a
-\code{\link[dplyr]{group_by}} followed by a \code{\link[dplyr]{summarise}}
-with the function(s) \code{.funs}.\cr
+The function does not support factors.
 The \code{.funs} arguments can be inputed with or without quotation as one
 function, for example: \code{.funs = sum} or \code{.funs = "sum"} or a list
 of multiple function, for example: \code{.funs = list(sum, mean)} or
@@ -40,7 +37,6 @@ functions or function for a specific column (example: \code{sum(COLNAME)})
 inputed, the function will be the name of the variable in the result.
 }
 \examples{
-
 library(dplyr)
 
 ## A toy data frame:
@@ -71,7 +67,6 @@ data \%>\%
 data \%>\%
   mutate(Var1 = recode(Var1, a = "b")) \%>\%
   aggregate_by(Var1, Var2, Var3, .funs = list(sum(Var6), mean(Var4)))
-
 }
 \author{
 Marc Choisy and Lucie Contamin.
