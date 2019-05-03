@@ -1,69 +1,50 @@
-library(magrittr) # for ' %>% '
-library(dplyr)
+# test examples
+set.seed(30101976)
+data <- expand.grid(letters[1:3], 1:3, 4:6)
+data$Var4 <- sample(1:100, nrow(data), TRUE)
+data$Var5 <- sample(1:100, nrow(data), TRUE)
+data$Var6 <- sample(1:100, nrow(data), TRUE)
+data <- transform(data, Var1 =  as.character(data$Var1))
 
 context("`mutate_by`")
 
 test_that("`mutate_by` returns the correct output", {
 
-  # test examples
-  set.seed(30101976)
-  data <- expand.grid(letters[1:3], 1:3, 4:6)
-  data$Var4 <- sample(1:100, nrow(data), TRUE)
-  data$Var5 <- sample(1:100, nrow(data), TRUE)
-  data$Var6 <- sample(1:100, nrow(data), TRUE)
-
   expected <- data
-  expected[which(expected$Var4 > 75), ] %<>%
-    anti_join(expected, .) %>%
-    group_by(Var1, Var2) %>%
-    summarise(Var4 = mean(Var4)) %>%
-    ungroup %>%
-    left_join(data[which(expected$Var4 > 75), ], ., by = c("Var1", "Var2")) %>%
-    rename(Var4 = Var4.y) %>%
-    select(-Var4.x) %>%
-    select(names(expected))
-  attr(expected, "out.attrs") <- NULL
+  expected[which(expected$Var4 > 75), "Var4"] <-
+    mean(expected[which(expected$Var2 == 3 & expected$Var1 == "a" &
+                          expected$Var4 <= 75), "Var4"])
+
+  test1 <- mutate_by(data, Var4 > 75, mean, colgroups = c("Var1", "Var2"))
+
+  testthat::expect_equivalent(test1,
+                              expected[order(expected$Var1, expected$Var2),])
 
   expected2 <- data
   expected2[which(expected2$Var4 > 75), "Var4"] <-  mean(data$Var4)
-  attr(expected2, "out.attrs") <- NULL
 
-  testthat::expect_equal(data %>%
-                           mutate_by(Var4 > 75, mean,
-                                     colgroups = c("Var1", "Var2")) %>%
-                           arrange(Var1, Var2, Var3),
-                         expected %>% arrange(Var1, Var2, Var3))
+  test2 <- mutate_by(data, Var4 > 75, mean)
 
-  testthat::expect_equal(expected2 %>% arrange(Var1, Var2, Var3),
-                         data %>% mutate_by(Var4 > 75, mean) %>%
-                           arrange(Var1, Var2, Var3))
+  testthat::expect_equal(expected2[order(expected2$Var1, expected2$Var2),],
+                         test2[order(test2$Var1, test2$Var2),])
 
   # test arguments `...`
-  df <- dplyr::starwars %>% select(name, height, mass)
-  dfexp <- df
-  dfexp[which(dfexp$height > 220), "height"] <- mean(dfexp$height, na.rm = TRUE)
-  attr(dfexp, "out.attrs") <- NULL
+  data$Var4 <- c(sample(1:100, nrow(data) - 2, TRUE), NA, NA)
+  expected3 <- data
+  expected3[which(expected3$Var4 > 75), "Var4"] <- mean(data$Var4, na.rm = TRUE)
 
-  testthat::expect_equal(df %>% mutate_by(height > 220, mean, na.rm = TRUE) %>%
-                           arrange(name, height, mass),
-                         dfexp %>% arrange(name, height, mass))
+  test3 <- mutate_by(data, Var4 > 75, mean, na.rm = TRUE)
+  testthat::expect_equal(expected3[order(expected3$Var1, expected3$Var2),],
+                         test3[order(test2$Var1, test3$Var2),])
 
   # test all arguments
-  dfexp2 <- dplyr::starwars %>% select(name, height, mass, species)
-  dfexp2[which(dfexp2$height > 230), ] %<>%
-    anti_join(dfexp2, .) %>%
-    group_by(species) %>%
-    summarise(height = mean(height, na.rm = TRUE)) %>%
-    ungroup %>%
-    left_join(dfexp2[which(dfexp2$height > 220), ], ., by = c("species")) %>%
-    rename(height = height.y) %>%
-    select(-height.x) %>%
-    select(names(dfexp2))
-  attr(dfexp2, "out.attrs") <- NULL
+  expected4 <- data
+  expected4[which(expected4$Var4 == 94), "Var4"] <-
+    mean(expected4[which(expected4$Var2 == 3 & expected4$Var1 == "c" &
+                         expected4$Var4 != 94), "Var4"])
 
-  testthat::expect_equal(dfexp2 %>% mutate_by(height > 230, mean, na.rm = TRUE,
-                                              colgroups = "species") %>%
-                           arrange(name, height, mass),
-                         dfexp2 %>% arrange(name, height, mass))
-
+  test4 <- mutate_by(data, Var4 == 94, mean, na.rm = TRUE,
+                     colgroups = c("Var1", "Var2"))
+  testthat::expect_equivalent(expected4[order(expected4$Var1, expected4$Var2),],
+                              test4)
 })

@@ -4,9 +4,7 @@
 #' of the variable. If necessary, the summarize value can be calculate on
 #' categorical variable groups
 #'
-#' The function performs a \code{\link[dplyr]{filter}}, if necessary a
-#' \code{\link[dplyr]{group_by}}, followed by a \code{\link[dplyr]{summarise}}
-#'  with the function(s) \code{.funs}.
+#' The function does not support factors.
 #'
 #' @param df the data frame on which to perform the mutate_by.
 #' @param .filter a filtering function to select the rows to applied the
@@ -17,91 +15,69 @@
 #' @param colgroups other variables to apply \code{group_by} used to calculate
 #' the new value.
 #'
-#' @return A data frame with the same variables as `df`.
+#' @return A data frame with the same variables as \code{df}.
 #'
 #' @author Lucie Contamin.
 #'
-#' @examples
+#' @example inst/examples/mutate_by.R
 #'
-#' library(dplyr)
-#'
-#' ## A toy data frame:
-#' set.seed(30101976)
-#' data <- expand.grid(letters[1:3], 1:3, 4:6)
-#' data$Var4 <- sample(1:100, nrow(data), TRUE)
-#' data$Var5 <- sample(1:100, nrow(data), TRUE)
-#' data$Var6 <- sample(1:100, nrow(data), TRUE)
-#'
-#' # To mutate the value > 75 in the variable `Var4` by the mean of the value of
-#' # `Var4` except the one > 75.
-#' data %>% mutate_by(Var4 > 75, mean)
-#'
-#' # To mutate the value > 75 in the variable `Var4` by the mean of the value of
-#' # `Var4` group by `Var1` and `Var2`, except the one > 75.
-#' data %>% mutate_by(Var4 > 75, mean, colgroups = c("Var1", "Var2"))
-#'
-#' # To mutate the value > 75 in the variable `Var4` by the mean of the value of
-#' # `Var4` group by `Var1` and `Var2`, except the one > 75 and by removing NA
-#' # value.
-#' data %>% mutate_by(Var4 > 75, mean, colgroups = c("Var1", "Var2"),
-#'   na.rm = TRUE)
-#'
-#' @importFrom magrittr %>% %<>%
-#' @importFrom dplyr filter anti_join mutate bind_rows select group_by
-#' summarise ungroup left_join rename matches
-#' @importFrom rlang parse_expr as_quosure
-#' @importFrom stringr str_extract
-#' @importFrom stats na.omit
+#' @importFrom rlang parse_expr
+#' @importFrom stats na.omit aggregate
 #'
 #' @export
 mutate_by <- function(df, .filter, .funs, ..., colgroups = NULL){
 
   flter <- substitute(.filter)
-  flter <- rlang::as_quosure(flter, env = NULL)
-  col_var <- stringr::str_extract(flter,
-                                  paste(colnames(df), collapse = "|")) %>%
-    na.omit() %>% unique()
+  col_var <- strsplit(as.character(flter),
+                      paste0("[^",paste(colnames(df), collapse = "|"),"]"))
+  col_var <- grep(paste(colnames(df), collapse = "|"), unlist(col_var),
+                  value = TRUE)
+  col_var <- unique(unlist(col_var))
 
-  add_arg <- substitute(list(...)) %>%
-    grep("list", ., invert = TRUE, value = TRUE)
+  add_arg <- substitute(list(...))
+  add_arg <- grep("list", add_arg, invert = TRUE, value = TRUE)
   lst_arg <- lapply(seq_along(add_arg), function(x) paste0(names(add_arg)[x],
                                                           " = ", add_arg[x]))
+  df <- as.data.frame(df, stringsAsFactors = FALSE)
+  dff <- subset(as.data.frame(df), eval(flter))
+  dft <- df[!rownames(df) %in% rownames(dff), ]
 
-  dff <- filter(df, !! flter)
-  dft <- dff %>% anti_join(df, ., by = names(df))
-
-  if (colgroups %>% length == 0) {
+  if (length(colgroups) == 0) {
 
     if (length(lst_arg) > 0) {
-      x <- paste0(as.character(substitute(.funs)), "(", lst_arg, ")")
+      x <- paste0(as.character(substitute(.funs)), '(df[, "', col_var,
+                  '", drop = TRUE], ', lst_arg, ")")
     } else {
-      x <-  as.character(substitute(.funs))
+      x <-  paste0(as.character(substitute(.funs)), '(df[, "', col_var,
+                   '", drop = TRUE])')
     }
-     x <- rlang::parse_expr(x)
+    x <- rlang::parse_expr(x)
 
-    res <- dff %>%
-      mutate(!!col_var := df %>% select(!!col_var) %>% unlist %>% !! x) %>%
-      bind_rows(dft)
+     res <- dff
+     res[, col_var] <- eval(x)
+     res <- rbind(res, dft)
+     res <- res[do.call(order, res[, names(res), drop = TRUE]), ]
 
   } else {
 
     if (length(lst_arg) > 0) {
-      x <- paste0(as.character(substitute(.funs)), "(", col_var, ", ", lst_arg,
-                  ")")
+      x <- paste0("function(x) ", as.character(substitute(.funs)),
+                  "(x, ", lst_arg, ")")
     } else {
-      x <- paste0(as.character(substitute(.funs)), "(", col_var, ")")
+      x <-  paste0("function(x) ", as.character(substitute(.funs)), "(x)")
     }
-    x <- rlang::parse_expr(x)
+    x_func <- rlang::parse_expr(x)
 
-    res <- dft %>%
-      group_by(.dots = colgroups) %>%
-      summarise(!!col_var := !! x) %>%
-      ungroup() %>%
-      left_join(dff, ., by = colgroups) %>%
-      rename(!!col_var := paste0(col_var, ".y")) %>%
-      select(-matches(paste0(col_var, ".x"))) %>%
-      select(names(df)) %>%
-      bind_rows(dft)
+    res <- dft
+    res <- aggregate(res[, col_var],
+                     by = as.list(res[, colgroups, drop = FALSE]),
+                     FUN = eval(x_func))
+    res <- merge(dff, res, by = colgroups)
+    res <- res[-which(colnames(res) %in% col_var)]
+    colnames(res)[length(res)] <- col_var
+    res <- res[, colnames(df)]
+    res <- rbind(res, dft)
+    res <- res[do.call(order, res[, names(res), drop = TRUE]), ]
   }
  res
 }
