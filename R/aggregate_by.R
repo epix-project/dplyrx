@@ -24,7 +24,7 @@ apply_fct <- function(df, .funcs, col, group_var) {
                     FUN = .funcs)
     names(df)
   }
-  df <- df[do.call(order, df[,group_var, drop = TRUE]), ]
+  df <- df[do.call(order, df[, group_var, drop = TRUE]), ]
   df
 }
 
@@ -59,7 +59,6 @@ apply_fct <- function(df, .funcs, col, group_var) {
 #' @example inst/examples/aggregate_by.R
 #'
 #' @importFrom stats aggregate
-#' @importFrom rlang parse_expr enquo
 #'
 #' @export
 aggregate_by <- function(df, col_name, ..., .funs = sum) {
@@ -103,7 +102,6 @@ aggregate_by <- function(df, col_name, ..., .funs = sum) {
 
   if (any(is.element(funcs, names(df)))) {
 
-   x <- rlang::enquo(.funs)
    sel <- names(df)[names(df) %in% funcs]
    funcs <- funcs[!funcs %in% names(df)]
    df <- apply_fct(df, funcs, sel, group_var)
@@ -137,6 +135,6 @@ aggregate_by <- function(df, col_name, ..., .funs = sum) {
     })
    df <-  Reduce(merge, df)
   }
-  df <- df[do.call(order, df[,group_var, drop = TRUE]), ]
+  df <- df[do.call(order, df[, group_var, drop = TRUE]), ]
   df
 }
