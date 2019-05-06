@@ -138,5 +138,5 @@ aggregate_by <- function(df, col_name, ..., .funs = sum) {
    df <-  Reduce(merge, df)
   }
   df <- df[do.call(order, df[,group_var, drop = TRUE]), ]
-
+  df
 }
