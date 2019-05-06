@@ -43,10 +43,8 @@ First, we need to `recode` the stations selected with the same value and then
 used the `aggregate_by` function on the output. 
 
 ```{r}
-library(dplyr)
-meteo %>% 
-  mutate(station = recode(station, `Can Tho` = "group_prov", `Da Lat`= "group_prov")) %>% 
-  aggregate_by(station, month, year, .funs = mean)
+meteo1 <- transform(meteo, station =  ifelse(meteo$station %in% c("Can Tho", "Da Lat"), "group_prov", as.character(meteo$station)))
+aggregate_by(meteo1, station, month, year, .funs = mean)
 ```
 
 The second argument are listed all the variables that should be used to 
@@ -63,9 +61,7 @@ We can naturally aggregate the observations and apply the function on
 list:
 
 ```{r}
-meteo %>% 
-  mutate(station = recode(station, `Can Tho` = "group_prov", `Da Lat`= "group_prov")) %>% 
-  aggregate_by(station, month, year, .funs = list(mean(temperature, humidity)))
+aggregate_by(meteo1, station, month, year, .funs = list(mean(temperature, humidity)))
 ```
 
 ## A more complex situation
@@ -80,9 +76,8 @@ sense to use the `sum` function for the variables `rainfall` and `sunshine`. The
 pipeline below shows how to do so:
 
 ```{r}
-meteo %>% 
-  mutate(month = recode(month, `January` = "group_month", `May`= "group_month")) %>% 
-  aggregate_by(station, month, year, .funs = list(mean(temperature, humidity), sum(rainfall, sunshine)))
+meteo2 <- transform(meteo, month =  ifelse(meteo$month %in% c("January", "May"), "group_month", as.character(meteo$month)))
+aggregate_by(meteo2, station, month, year, .funs = list(mean(temperature, humidity), sum(rainfall, sunshine)))
 ```
 
 ## Programming with aggregate_by
@@ -97,16 +92,15 @@ For these examples, we will just use the temperature and rainfall columns of the
 meteo data set, to have a simplier visualisation
 
 ```{r}
-meteo2 <- meteo %>% select(year, month, station, temperature, rainfall)
+meteo3 <- meteo [, c("year", "month", "station", "temperature", "rainfall")]
 ```
 
 Let's start with a simple case: we want to aggregate the station `Can Tho` and 
 `Da Lat` by month  and year. 
 
 ```{r}
-meteo2 %>% 
-  mutate(station = recode(station, `Can Tho` = "group_prov", `Da Lat`= "group_prov")) %>% 
-  aggregate_by(station, month, year)
+meteo4 <- transform(meteo3, station =  ifelse(meteo$station %in% c("Can Tho", "Da Lat"), "group_prov", as.character(meteo$station)))
+aggregate_by(meteo4, station, month, year)
 ```
 
 In a function: 
@@ -117,9 +111,7 @@ my_aggregate_by <- function(df, group_var) {
 }
 
 group_var <- c("year", "month")
-meteo2 %>% 
-  mutate(station = recode(station, `Can Tho` = "group_prov", `Da Lat`= "group_prov")) %>% 
-  my_aggregate_by(group_var)
+my_aggregate_by(meteo4, group_var)
 ```
 
 It's the same principle with the argument `col_name` (here: `station`). We can 
@@ -133,9 +125,7 @@ my_aggregate_by <- function(df, col_name, group_var) {
 sel <- "station"
 sel_var <- c("year", "month")
 
-meteo2 %>% 
-  mutate(station = recode(station, `Can Tho` = "group_prov", `Da Lat`= "group_prov")) %>% 
-  my_aggregate_by(sel, sel_var)
+my_aggregate_by(meteo4, sel, sel_var)
 ```
 
 The next challenge is to also integrate the `.funs` arguments in our function to
@@ -154,8 +144,5 @@ in programming to avoid problem of evaluation.
 sel <- "station"
 sel_var <- c("year", "month")
 lst_fun <-  list("mean(temperature)", "sum(rainfall)")
-
-meteo2 %>% 
-  mutate(station = recode(station, `Can Tho` = "group_prov", `Da Lat`= "group_prov")) %>% 
-  my_aggregate_by(sel, sel_var, functs = lst_fun)
+my_aggregate_by(meteo4, sel, sel_var, functs = lst_fun)
 ```
