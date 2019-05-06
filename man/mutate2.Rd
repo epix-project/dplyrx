@@ -21,6 +21,8 @@ the user-defined attributes (i.e. those that do not belong to the data frame
 class) in doing so.
 }
 \examples{
+library(dplyr)
+
 # Let's start by adding an attribute to a data frame:
 attr(mtcars, "my_attribute_name") <- "my_attribute_value"
 
@@ -28,10 +30,10 @@ attr(mtcars, "my_attribute_name") <- "my_attribute_value"
 attributes(mtcars)
 
 # We can now see that mutate drops the non-class attributes:
-mtcars \%>\% mutate(a_new_variable = 3) \%>\% attributes()
+mutate(mtcars, a_new_variable = 3) \%>\% attributes()
 
 # Whereas mutate2 does not:
-mtcars \%>\% mutate2(a_new_variable = 3) \%>\% attributes()
+mutate2(mtcars, a_new_variable = 3) \%>\% attributes()
 }
 \seealso{
 \code{\link[dplyr]{mutate}}.
