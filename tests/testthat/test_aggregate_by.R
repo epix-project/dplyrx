@@ -32,8 +32,8 @@ expect_all <- list(sum_all, mean_all)
 expect_all <- Reduce(
   function(x, y) merge(x = x, y = y, by = c("Var1", "Var2", "Var3")),
   expect_all)
-colnames(expect_all) <- gsub(".x", "_sum",colnames(expect_all))
-colnames(expect_all) <- gsub(".y", "_mean",colnames(expect_all))
+colnames(expect_all) <- gsub(".x", "_sum", colnames(expect_all))
+colnames(expect_all) <- gsub(".y", "_mean", colnames(expect_all))
 
 context("`aggregate_by`")
 

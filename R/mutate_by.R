@@ -29,7 +29,7 @@ mutate_by <- function(df, .filter, .funs, ..., colgroups = NULL){
 
   flter <- substitute(.filter)
   col_var <- strsplit(as.character(flter),
-                      paste0("[^",paste(colnames(df), collapse = "|"),"]"))
+                      paste0("[^", paste(colnames(df), collapse = "|"), "]"))
   col_var <- grep(paste(colnames(df), collapse = "|"), unlist(col_var),
                   value = TRUE)
   col_var <- unique(unlist(col_var))
