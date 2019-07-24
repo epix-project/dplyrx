@@ -1,3 +1,5 @@
+library(dplyr)
+
 # Let's start by adding an attribute to a data frame:
 attr(mtcars, "my_attribute_name") <- "my_attribute_value"
 
