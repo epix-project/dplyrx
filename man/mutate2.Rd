@@ -21,7 +21,6 @@ the user-defined attributes (i.e. those that do not belong to the data frame
 class) in doing so.
 }
 \examples{
-
 library(dplyr)
 
 # Let's start by adding an attribute to a data frame:
