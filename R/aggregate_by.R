@@ -76,10 +76,10 @@ aggregate_by <- function(df, col_name, ..., .funs = sum) {
     res1 <- try(eval(substitute(...)), silent = TRUE)
     if (inherits(res1, "try-error")) {
       col_sel <- unlist(list(...))
-    } else {
+    } else { # nocov start
       col_sel <- eval(substitute(list(...)))
       col_sel <- as.vector(unlist(col_sel))
-    }
+    } #nocov end
   }
 
   group_var <-  c(col_name, col_sel)
