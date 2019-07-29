@@ -16,7 +16,6 @@
 #' @example inst/examples/mutate2.R
 #'
 #' @importFrom dplyr mutate
-#' @importFrom magrittr %<>%
 #'
 #' @export
 #'
@@ -24,7 +23,7 @@ mutate2 <- function(.data, ...) {
 
   old_attributes <- attributes(.data)
   old_class <- class(.data)
-  .data %<>% mutate(...)
+  .data <- mutate(.data, ...)
 
   new_attributes <- attributes(.data)
   missing_attributes <- old_attributes[! names(old_attributes) %in%
