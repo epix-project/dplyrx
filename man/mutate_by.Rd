@@ -21,7 +21,7 @@ value. Inputed as a function name.}
 the new value.}
 }
 \value{
-A data frame with the same variables as `df`.
+A data frame with the same variables as \code{df}.
 }
 \description{
 \code{mutate_by} mutates value of a certain variable by the summarize value
@@ -34,7 +34,6 @@ The function performs a \code{\link[dplyr]{filter}}, if necessary a
  with the function(s) \code{.funs}.
 }
 \examples{
-
 library(dplyr)
 
 ## A toy data frame:
@@ -57,7 +56,6 @@ data \%>\% mutate_by(Var4 > 75, mean, colgroups = c("Var1", "Var2"))
 # value.
 data \%>\% mutate_by(Var4 > 75, mean, colgroups = c("Var1", "Var2"),
   na.rm = TRUE)
-
 }
 \author{
 Lucie Contamin.
